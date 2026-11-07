@@ -264,7 +264,7 @@ fun AboutScreen(
             checking = false
             if (latest == null) {
                 info = "检查更新" to "检查失败，请检查网络后重试。"
-            } else if (latest.versionName.isNotBlank() && latest.versionName != version) {
+            } else if (latest.versionName.isNotBlank() && Updates.isNewer(latest.versionName, version)) {
                 info = "发现新版本 v${latest.versionName}" to
                     "当前版本：v$version\n最新版本：v${latest.versionName}\n\n" +
                     (latest.body.ifBlank { "暂无更新说明" }) +
@@ -321,7 +321,7 @@ fun AboutScreen(
                             color = MiuixTheme.colorScheme.onSurface,
                         )
                         Text(
-                            text = "v$version · Miuix 重制版",
+                            text = "v$version · 内部 ${com.dsh.miuix.cardface.core.BuildInfo.INTERNAL_VERSION} · Miuix 重制版",
                             style = MiuixTheme.textStyles.footnote1,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
                         )

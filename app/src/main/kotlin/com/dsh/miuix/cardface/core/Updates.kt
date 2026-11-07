@@ -7,6 +7,18 @@ import java.net.URL
 /** GitHub Release 查询（只用于「检查更新 / 更新公告」）。 */
 object Updates {
 
+    /** 语义化版本比较：1.0.10 > 1.0.6；无法解析时按字符串不等处理。 */
+    fun isNewer(latest: String, current: String): Boolean {
+        val a = latest.trim().removePrefix("v").split('.').map { it.toIntOrNull() ?: 0 }
+        val b = current.trim().removePrefix("v").split('.').map { it.toIntOrNull() ?: 0 }
+        for (i in 0 until maxOf(a.size, b.size)) {
+            val x = a.getOrElse(i) { 0 }
+            val y = b.getOrElse(i) { 0 }
+            if (x != y) return x > y
+        }
+        return false
+    }
+
     data class Release(
         val versionName: String,
         val tag: String,

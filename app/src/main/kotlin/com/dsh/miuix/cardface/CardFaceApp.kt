@@ -138,7 +138,9 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
             runCatching { com.dsh.miuix.cardface.core.Updates.fetchLatest() }.getOrNull()
         } ?: return@LaunchedEffect
         val current = com.dsh.miuix.cardface.ui.DeviceBridge.versionName(context)
-        if (latest.versionName.isNotBlank() && latest.versionName != current) {
+        if (latest.versionName.isNotBlank() &&
+            com.dsh.miuix.cardface.core.Updates.isNewer(latest.versionName, current)
+        ) {
             model.notify("发现新版本 v${latest.versionName}，可在关于页查看")
         }
     }
