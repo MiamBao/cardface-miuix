@@ -131,6 +131,18 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
         }
     }
 
+    // 启动时静默检查 GitHub 最新版本（可在关于页关掉）。
+    LaunchedEffect(Unit) {
+        if (!model.prefs.autoCheckUpdate) return@LaunchedEffect
+        val latest = withContext(Dispatchers.IO) {
+            runCatching { com.dsh.miuix.cardface.core.Updates.fetchLatest() }.getOrNull()
+        } ?: return@LaunchedEffect
+        val current = com.dsh.miuix.cardface.ui.DeviceBridge.versionName(context)
+        if (latest.versionName.isNotBlank() && latest.versionName != current) {
+            model.notify("发现新版本 v${latest.versionName}，可在关于页查看")
+        }
+    }
+
     Scaffold(
         topBar = {
             if (currentPage == Page.Crop) {

@@ -28,6 +28,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import android.content.Intent
+import android.net.Uri
+import com.dsh.miuix.cardface.core.Updates
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import top.yukonga.miuix.kmp.icon.extended.Refresh
 import com.dsh.miuix.cardface.core.CardFaceItem
 import com.dsh.miuix.cardface.core.WalletApps
 import kotlinx.coroutines.launch
@@ -238,7 +244,46 @@ fun AboutScreen(
     onOpenFaq: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val prefs = model.prefs
     val version = remember { DeviceBridge.versionName(context) }
+    var checking by remember { mutableStateOf(false) }
+    var info by remember { mutableStateOf<Pair<String, String>?>(null) }
+
+    fun openUrl(url: String) {
+        runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+            .onFailure { model.notify("没有可打开链接的应用") }
+    }
+
+    fun checkUpdate() {
+        if (checking) return
+        checking = true
+        scope.launch {
+            val latest = withContext(Dispatchers.IO) { Updates.fetchLatest() }
+            checking = false
+            if (latest == null) {
+                info = "检查更新" to "检查失败，请检查网络后重试。"
+            } else if (latest.versionName.isNotBlank() && latest.versionName != version) {
+                info = "发现新版本 v${latest.versionName}" to
+                    "当前版本：v$version\n最新版本：v${latest.versionName}\n\n" +
+                    (latest.body.ifBlank { "暂无更新说明" }) +
+                    "\n\n项目地址：${latest.htmlUrl}"
+            } else {
+                info = "已是最新版本" to "当前 v$version 已经是最新版本。"
+            }
+        }
+    }
+
+    fun showAnnouncement() {
+        scope.launch {
+            val latest = withContext(Dispatchers.IO) { Updates.fetchLatest() }
+            info = if (latest == null) {
+                "更新公告" to "获取失败，请检查网络后重试。"
+            } else {
+                "更新公告 · v${latest.versionName}" to latest.body.ifBlank { "暂无更新说明" }
+            }
+        }
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -302,6 +347,45 @@ fun AboutScreen(
                     fontWeight = FontWeight.Medium,
                     color = MiuixTheme.colorScheme.primary,
                 )
+            }
+        }
+
+        // 项目：地址 / 检查更新 / 更新公告 / 自动检查开关
+        item(key = "project") {
+            Column {
+                SmallTitle(text = "项目")
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    cornerRadius = 20.dp,
+                    insideMargin = PaddingValues(vertical = 4.dp),
+                ) {
+                    ArrowPreference(
+                        title = "项目地址",
+                        summary = "github.com/MiamBao/cardface-miuix",
+                        onClick = { openUrl("https://github.com/MiamBao/cardface-miuix") },
+                    )
+                    HorizontalDivider()
+                    ArrowPreference(
+                        title = "检查更新",
+                        summary = if (checking) "正在检查…" else "当前版本 v$version",
+                        onClick = { checkUpdate() },
+                    )
+                    HorizontalDivider()
+                    ArrowPreference(
+                        title = "更新公告",
+                        summary = "查看最近版本的更新内容",
+                        onClick = { showAnnouncement() },
+                    )
+                    HorizontalDivider()
+                    SwitchPreference(
+                        title = "自动检查更新",
+                        summary = "启动时检查 GitHub 最新版本",
+                        checked = prefs.autoCheckUpdate,
+                        onCheckedChange = { prefs.autoCheckUpdate = it },
+                    )
+                }
             }
         }
 
@@ -469,6 +553,13 @@ fun AboutScreen(
             )
         }
     }
+
+    InfoDialog(
+        show = info != null,
+        title = info?.first ?: "",
+        message = info?.second ?: "",
+        onDismiss = { info = null },
+    )
 }
 
 /** 关于页的小标签（圆角浅色胶囊）。 */

@@ -67,6 +67,11 @@ class AppPrefs(context: Context) {
         get() = settings.getBoolean(KEY_DEV_MODE, false)
         set(v) = settings.edit().putBoolean(KEY_DEV_MODE, v).apply().also { touch() }
 
+    /** 启动时自动检查 GitHub 最新版本（可在关于页关掉）。 */
+    var autoCheckUpdate: Boolean
+        get() = settings.getBoolean("auto_check_update", true)
+        set(v) = settings.edit().putBoolean("auto_check_update", v).apply().also { touch() }
+
     var firstRun: Boolean
         get() = settings.getBoolean(KEY_FIRST_RUN, true)
         set(v) = settings.edit().putBoolean(KEY_FIRST_RUN, v).apply().also { touch() }

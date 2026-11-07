@@ -59,6 +59,13 @@ class UrlMapperTest {
     }
 
     @Test
+    fun `url with size segment and query still maps to original`() {
+        val url = "https://cdn.example.com/card/w270h480/xx.png?ts=123"
+        val env = env(mappings = mapOf("https://cdn.example.com/card/xx.png" to "mine.png"))
+        assertEquals(UrlMapper.LOCAL_IMAGE_URI_PREFIX + "mine.png", UrlMapper.map(url, env).url)
+    }
+
+    @Test
     fun `small icon still gets replaced when mapping exists`() {
         val url = "https://cdn.example.com/card/w270h480/xx.png"
         val result = UrlMapper.map(

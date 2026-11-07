@@ -74,6 +74,27 @@ object UrlMapper {
             url.contains(SMALL_ICON_DOOR_LOGO) ||
             url.contains(SMALL_ICON_MIBI)
 
+    private val SIZE_SEGMENT = Regex("/w\\d+h\\d+(?=[/?#]|$)")
+
+    /** 去掉查询串/尺寸段后的 URL，用于容忍卡包每次加载的缩略图/签名参数变化。 */
+    fun normalizedUrl(url: String): String {
+        var u = url.substringBefore('#').substringBefore('?')
+        u = SIZE_SEGMENT.replace(u, "")
+        return u.trimEnd('/')
+    }
+
+    /** 先精确匹配；找不到再按归一化 URL（以及唯一同名文件）兜底。 */
+    fun lookupMapping(url: String, mappings: Map<String, String>): String? {
+        mappings[url]?.let { return it }
+        val normalized = normalizedUrl(url)
+        mappings.entries.firstOrNull { normalizedUrl(it.key) == normalized }?.let { return it.value }
+        // 最后兜底：路径最后一段相同，且只有唯一一条映射时才算命中，避免换错卡。
+        val base = normalized.substringAfterLast('/')
+        if (base.isEmpty()) return null
+        val candidates = mappings.filterKeys { normalizedUrl(it).substringAfterLast('/') == base }
+        return if (candidates.size == 1) candidates.values.first() else null
+    }
+
     fun isHttpUrl(value: String): Boolean =
         value.startsWith("https://") || value.startsWith("http://")
 
@@ -105,8 +126,8 @@ object UrlMapper {
             return Result(TEST_IMAGE_URI, track)
         }
 
-        // 2. 查映射；没有映射 -> 保留原图。
-        val replacement = env.mappings[url]
+        // 2. 查映射（容忍 URL 的查询参数/缩略图尺寸变化）；没有映射 -> 保留原图。
+        val replacement = lookupMapping(url, env.mappings)
         if (replacement.isNullOrEmpty()) return Result("", track)
 
         // 3. 网络地址原样交给卡包。
@@ -123,8 +144,8 @@ object UrlMapper {
             return Result("file://${env.walletImagesDir.trimEnd('/')}/$replacement", track)
         }
 
-        // 6. 兼容模式：这次调用时复制到卡包 files/images 并返回 file://。
-        if (env.compatMode && env.walletImagesDir.isNotEmpty()) {
+        // 6. 卡包目录里还没有这张图：请求 root 复制后再给 file://（不依赖兼容模式开关）。
+        if (env.walletImagesDir.isNotEmpty()) {
             val dir = env.walletImagesDir.trimEnd('/')
             return Result(
                 url = "file://$dir/$replacement",
