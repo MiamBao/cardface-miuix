@@ -31,6 +31,14 @@
 |---|
 | ![关于](docs/screens/05-about.jpg) |
 
+### 原版界面
+
+下面是本项目所基于的原版「DIY NFC卡面图片」v2.4（作者 zhizi42）的界面，仅作来源说明 / 对比用：
+
+![原版界面（DIY NFC卡面图片 v2.4）](docs/screens/06-original-ui.jpg)
+
+> 原版仓库：<https://github.com/Xposed-Modules-Repo/com.zhizi42.diymiuicard>
+
 ## 功能
 
 - **替换卡面**：把图片合成为 960×606 PNG，复制到卡包私有目录后以 `file://` 交给卡包加载；
