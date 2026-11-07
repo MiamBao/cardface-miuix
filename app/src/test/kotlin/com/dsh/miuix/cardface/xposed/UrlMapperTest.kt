@@ -66,6 +66,13 @@ class UrlMapperTest {
     }
 
     @Test
+    fun `url with hashed path segment still maps to original`() {
+        val url = "https://cdn.example.com/mfc/thumbnail/webp/a1b2c3d4e5f6a7b8/xx.png"
+        val env = env(mappings = mapOf("https://cdn.example.com/mfc/thumbnail/webp/xx.png" to "mine.png"))
+        assertEquals(UrlMapper.LOCAL_IMAGE_URI_PREFIX + "mine.png", UrlMapper.map(url, env).url)
+    }
+
+    @Test
     fun `small icon still gets replaced when mapping exists`() {
         val url = "https://cdn.example.com/card/w270h480/xx.png"
         val result = UrlMapper.map(

@@ -75,20 +75,28 @@ object UrlMapper {
             url.contains(SMALL_ICON_MIBI)
 
     private val SIZE_SEGMENT = Regex("/w\\d+h\\d+(?=[/?#]|$)")
+    private val HASH_SEGMENT = Regex("(^|/)[0-9a-fA-F]{12,}(?=/|$)")
+    private val UUID_SEGMENT = Regex(
+        "(^|/)[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(?=/|$)",
+    )
 
-    /** 去掉查询串/尺寸段后的 URL，用于容忍卡包每次加载的缩略图/签名参数变化。 */
+    /** 去掉查询参数、缩略图尺寸段、哈希/UUID 段后的 URL，用来容忍卡包刷新后 URL 细节变化。 */
     fun normalizedUrl(url: String): String {
         var u = url.substringBefore('#').substringBefore('?')
         u = SIZE_SEGMENT.replace(u, "")
+        u = UUID_SEGMENT.replace(u, "")
+        u = HASH_SEGMENT.replace(u, "")
         return u.trimEnd('/')
     }
 
-    /** 先精确匹配；找不到再按归一化 URL（以及唯一同名文件）兜底。 */
+    /**
+     * 先精确匹配；再按归一化 URL 匹配；最后按「唯一同名文件」兜底。
+     * 这样卡包把 URL 换成带新签名/尺寸/哈希的版本时，仍然能命中原来的替换图。
+     */
     fun lookupMapping(url: String, mappings: Map<String, String>): String? {
         mappings[url]?.let { return it }
         val normalized = normalizedUrl(url)
         mappings.entries.firstOrNull { normalizedUrl(it.key) == normalized }?.let { return it.value }
-        // 最后兜底：路径最后一段相同，且只有唯一一条映射时才算命中，避免换错卡。
         val base = normalized.substringAfterLast('/')
         if (base.isEmpty()) return null
         val candidates = mappings.filterKeys { normalizedUrl(it).substringAfterLast('/') == base }
