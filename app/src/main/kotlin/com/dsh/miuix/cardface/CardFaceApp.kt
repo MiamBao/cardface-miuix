@@ -240,10 +240,9 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                 Page.Gallery -> GalleryScreen(
                     model = model,
                     innerPadding = innerPadding,
-                    onPickForCrop = { uri ->
-                        model.startCrop(CropTarget.Gallery)
-                        model.cropUri = uri
-                        nav.push(Route(Page.Crop))
+                    onPickForCrop = { uris ->
+                        model.startCropBatch(CropTarget.Gallery, uris)
+                        if (uris.isNotEmpty()) nav.push(Route(Page.Crop))
                     },
                 )
 
@@ -280,7 +279,6 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                             draft.localCrop = cropRect
                             nav.pop()
                         } else {
-                            nav.pop()
                             scope.launch {
                                 val card = CardImaging.buildCard(
                                     context = context,
@@ -299,6 +297,10 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                                     model.snackbar.showSnackbar(
                                         if (saved) "已保存到图库：$name" else "保存失败",
                                     )
+                                }
+                                // 还有下一张就留在裁剪页继续，全部处理完再返回。
+                                if (!model.advanceCropBatch()) {
+                                    nav.pop()
                                 }
                             }
                         }

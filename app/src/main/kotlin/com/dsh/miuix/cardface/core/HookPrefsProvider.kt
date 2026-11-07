@@ -31,7 +31,7 @@ import java.util.LinkedHashMap
 object HookPrefsProtocol {
 
     /** 必须是 <modulePackage>.preference（LSPosed 约定）。 */
-    const val AUTHORITY = "io.github.miambao.cardface.preference"
+    const val AUTHORITY = "com.dsh.miuix.cardface.preference"
 
     /** 暴露给卡包进程的 prefs 分组。 */
     val PREF_NAMES = arrayOf("settings", "card_urls")

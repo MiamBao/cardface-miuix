@@ -13,11 +13,11 @@ android {
     buildToolsVersion = "37.0.0"
 
     defaultConfig {
-        applicationId = "io.github.miambao.cardface"
+        applicationId = "com.dsh.miuix.cardface"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.0.3"
+        versionCode = 5
+        versionName = "1.0.4"
     }
 
     // 签名信息从本地的 keystore.properties 读取（该文件与 keystore/ 都不入库）。

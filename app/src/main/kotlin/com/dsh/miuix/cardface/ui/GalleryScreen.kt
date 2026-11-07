@@ -70,7 +70,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 fun GalleryScreen(
     model: AppModel,
     innerPadding: PaddingValues,
-    onPickForCrop: (android.net.Uri) -> Unit,
+    onPickForCrop: (List<android.net.Uri>) -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -91,8 +91,11 @@ fun GalleryScreen(
         }.getOrDefault(emptyList())
     }
 
-    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) onPickForCrop(uri)
+    // 多选：一次最多 9 张，裁剪时按顺序一张一张处理。
+    val picker = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia(9),
+    ) { uris ->
+        if (uris.isNotEmpty()) onPickForCrop(uris)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

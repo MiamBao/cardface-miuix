@@ -84,6 +84,11 @@ fun CropScreen(
     var viewport by remember { mutableStateOf(IntSize.Zero) }
     var zoom by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
+    // 批量裁剪切换下一张时重置视图，避免带着上一张的缩放/位移。
+    LaunchedEffect(uri) {
+        zoom = 1f
+        offset = Offset.Zero
+    }
 
     fun baseScale(): Float {
         if (srcW == 0 || srcH == 0 || viewport.width == 0 || viewport.height == 0) return 1f

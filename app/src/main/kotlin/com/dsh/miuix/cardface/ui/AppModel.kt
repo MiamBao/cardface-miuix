@@ -151,6 +151,36 @@ class AppModel(context: Context) {
     /** 当前裁剪任务的源图。 */
     var cropUri by mutableStateOf<Uri?>(null)
 
+    /** 图库多选批量裁剪队列。 */
+    private val cropQueue = ArrayDeque<Uri>()
+
+    /** 批量裁剪进度：总数 / 当前第几张（从 1 开始，0 表示不是批量）。 */
+    var cropBatchTotal by mutableStateOf(0)
+    var cropBatchIndex by mutableStateOf(0)
+
+    fun startCropBatch(target: CropTarget, uris: List<Uri>) {
+        cropTarget = target
+        cropQueue.clear()
+        cropQueue.addAll(uris)
+        cropBatchTotal = uris.size
+        cropBatchIndex = if (uris.isEmpty()) 0 else 1
+        cropUri = uris.firstOrNull()
+    }
+
+    /** 处理完当前张后切到下一张；没有下一张返回 false。 */
+    fun advanceCropBatch(): Boolean {
+        if (cropQueue.isEmpty()) return false
+        cropQueue.removeFirst()
+        if (cropQueue.isEmpty()) {
+            cropBatchTotal = 0
+            cropBatchIndex = 0
+            return false
+        }
+        cropBatchIndex++
+        cropUri = cropQueue.first()
+        return true
+    }
+
     fun openEditor(url: String) {
         if (editor.url != url) editor = EditorDraft(url)
     }
