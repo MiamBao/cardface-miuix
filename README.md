@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/Xposed-Modules-Repo/io.github.miambao.cardface"><img src="https://img.shields.io/badge/LSPosed-Module%20Repo-blue.svg" alt="LSPosed Repo"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue.svg" alt="License"/></a>
   <img src="https://img.shields.io/badge/Android-8.0%2B-green.svg" alt="Android"/>
   <img src="https://img.shields.io/badge/LSPosed-API%20101%2B-orange.svg" alt="LSPosed"/>
