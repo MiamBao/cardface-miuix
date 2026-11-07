@@ -115,7 +115,7 @@ fun GuideScreen(
                     actionText = "打开卡包",
                     onAction = {
                         if (!DeviceBridge.openWallet(context, status?.walletKind)) {
-                            scope.launch { model.snackbar.showSnackbar("没有找到卡包应用") }
+                            scope.launch { model.notify("没有找到卡包应用") }
                         }
                     },
                 )
@@ -560,7 +560,7 @@ fun BlacklistScreen(model: AppModel, innerPadding: PaddingValues, onBack: () -> 
                             text = "移出",
                             onClick = {
                                 prefs.removeBlacklisted(item.url)
-                                scope.launch { model.snackbar.showSnackbar("已移出黑名单") }
+                                scope.launch { model.notify("已移出黑名单") }
                             },
                         )
                     }
@@ -668,7 +668,7 @@ fun DevHookScreen(model: AppModel, innerPadding: PaddingValues, onBack: () -> Un
                         prefs.hookMethodArg = methodArg.trim()
                         prefs.hookLoadUrlFromArg = loadFromArg
                         prefs.hookReplaceUrlToArg = replaceToArg
-                        scope.launch { model.snackbar.showSnackbar("已保存 hook 点，重启卡包后生效") }
+                        scope.launch { model.notify("已保存 hook 点，重启卡包后生效") }
                     },
                     modifier = Modifier.fillMaxWidth(),
                 )

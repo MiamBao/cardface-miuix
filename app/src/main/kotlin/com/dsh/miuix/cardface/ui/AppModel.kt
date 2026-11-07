@@ -10,6 +10,11 @@ import androidx.compose.runtime.setValue
 import com.dsh.miuix.cardface.core.AppPrefs
 import com.dsh.miuix.cardface.core.ImageStore
 import androidx.compose.runtime.staticCompositionLocalOf
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import top.yukonga.miuix.kmp.basic.SnackbarDuration
 import top.yukonga.miuix.kmp.basic.SnackbarHostState
 
 /** 全局动画开关（设置页「界面过渡动画」）；关闭后所有过渡立即失效。 */
@@ -133,6 +138,15 @@ class AppModel(context: Context) {
     val prefs = AppPrefs(this.context)
     val store = ImageStore(this.context)
     val snackbar = SnackbarHostState()
+
+    private val uiScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    /** 短时提示：默认几秒的 Snackbar 会挡住底部按钮，这里统一压到最短。 */
+    fun notify(message: String) {
+        uiScope.launch {
+            runCatching { snackbar.showSnackbar(message, duration = SnackbarDuration.Short) }
+        }
+    }
 
     var editor by mutableStateOf(EditorDraft(""))
         private set

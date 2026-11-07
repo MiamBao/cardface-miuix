@@ -110,7 +110,7 @@ fun SettingsScreen(
     var showDarkDialog by remember { mutableStateOf(false) }
 
     fun toast(message: String) {
-        scope.launch { model.snackbar.showSnackbar(message) }
+        scope.launch { model.notify(message) }
     }
 
     LazyColumn(

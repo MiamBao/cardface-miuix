@@ -286,20 +286,28 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                                     crop = cropRect,
                                     opts = CardImaging.Options(roundCorners = true, logoAsset = null),
                                 )
+                                val batchTotal = model.cropBatchTotal
+                                var saved = false
+                                var name = ""
                                 if (card == null) {
-                                    model.snackbar.showSnackbar("保存失败：图片合成出错")
+                                    model.notify("保存失败：图片合成出错")
                                 } else {
-                                    val name = model.store.uniqueName(model.store.defaultName())
-                                    val saved = withContext(Dispatchers.IO) {
+                                    name = model.store.uniqueName(model.store.defaultName())
+                                    saved = withContext(Dispatchers.IO) {
                                         runCatching { model.store.save(card, name) }.isSuccess
                                     }
                                     model.bumpStore()
-                                    model.snackbar.showSnackbar(
-                                        if (saved) "已保存到图库：$name" else "保存失败",
-                                    )
+                                    // 批量裁剪时不在每张之间弹提示，避免挡住底部按钮；全部完成再汇总一次。
+                                    if (batchTotal <= 1) {
+                                        model.notify(if (saved) "已保存到图库：$name" else "保存失败")
+                                    }
                                 }
                                 // 还有下一张就留在裁剪页继续，全部处理完再返回。
-                                if (!model.advanceCropBatch()) {
+                                val hasNext = model.advanceCropBatch()
+                                if (!hasNext) {
+                                    if (batchTotal > 1) {
+                                        model.notify(if (saved) "已保存 $batchTotal 张到图库" else "批量保存完成，有图片失败")
+                                    }
                                     nav.pop()
                                 }
                             }

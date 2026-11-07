@@ -187,7 +187,7 @@ fun HomeScreen(
                         onRefresh = { isRefreshing = true },
                         onOpenWallet = {
                             if (!DeviceBridge.openWallet(context, status.walletKind)) {
-                                scope.launch { model.snackbar.showSnackbar("没有找到卡包应用") }
+                                scope.launch { model.notify("没有找到卡包应用") }
                             }
                         },
                         onLoadDemo = {
@@ -200,7 +200,7 @@ fun HomeScreen(
                                     demoLoading = false
                                     refreshTick++
                                     model.bumpStore()
-                                    model.snackbar.showSnackbar(
+                                    model.notify(
                                         if (ok) "已载入演示卡面，点卡片就能试完整流程" else "演示卡面载入失败",
                                     )
                                 }
@@ -253,7 +253,7 @@ fun HomeScreen(
                     sheetFace = null
                     if (url != null) {
                         DeviceBridge.copyText(context, url)
-                        scope.launch { model.snackbar.showSnackbar("卡面地址已复制") }
+                        scope.launch { model.notify("卡面地址已复制") }
                     }
                 },
             )
@@ -291,7 +291,7 @@ fun HomeScreen(
                     sheetFace = null
                     if (url != null) {
                         model.prefs.addBlacklisted(url)
-                        scope.launch { model.snackbar.showSnackbar("已加入黑名单") }
+                        scope.launch { model.notify("已加入黑名单") }
                     }
                 },
             )
@@ -330,7 +330,7 @@ fun HomeScreen(
                     text = "保存",
                     onClick = {
                         prefs.setCustomName(renaming.url, input)
-                        scope.launch { model.snackbar.showSnackbar("已重命名为「${input.ifBlank { renaming.displayName }}」") }
+                        scope.launch { model.notify("已重命名为「${input.ifBlank { renaming.displayName }}」") }
                         renameFace = null
                     },
                     modifier = Modifier.weight(1f),

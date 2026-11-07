@@ -128,7 +128,7 @@ fun EditorScreen(
     }
 
     fun toast(message: String) {
-        scope.launch { model.snackbar.showSnackbar(message) }
+        scope.launch { model.notify(message) }
     }
 
     fun applyReplacement(value: String?) {

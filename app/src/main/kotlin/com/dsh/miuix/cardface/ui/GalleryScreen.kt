@@ -208,8 +208,8 @@ fun GalleryScreen(
                         model.store.delete(image.name)
                         com.dsh.miuix.cardface.core.CardSync.writeMapSnapshot(context, model.prefs)
                         tick++
-                    }.onFailure { model.snackbar.showSnackbar("删除失败：${it.message}") }
-                    model.snackbar.showSnackbar("已删除 ${image.name}")
+                    }.onFailure { model.notify("删除失败：${it.message}") }
+                    model.notify("已删除 ${image.name}")
                 }
             }
         },
