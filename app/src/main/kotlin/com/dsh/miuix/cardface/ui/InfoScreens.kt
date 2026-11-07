@@ -249,6 +249,7 @@ fun AboutScreen(
     val version = remember { DeviceBridge.versionName(context) }
     var checking by remember { mutableStateOf(false) }
     var info by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var autoCheckUpdate by remember { mutableStateOf(prefs.autoCheckUpdate) }
 
     fun openUrl(url: String) {
         runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
@@ -382,8 +383,11 @@ fun AboutScreen(
                     SwitchPreference(
                         title = "自动检查更新",
                         summary = "启动时检查 GitHub 最新版本",
-                        checked = prefs.autoCheckUpdate,
-                        onCheckedChange = { prefs.autoCheckUpdate = it },
+                        checked = autoCheckUpdate,
+                        onCheckedChange = {
+                            autoCheckUpdate = it
+                            prefs.autoCheckUpdate = it
+                        },
                     )
                 }
             }
