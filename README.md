@@ -38,7 +38,7 @@
 - **高质量缩放**：缩放感知 Lanczos3 + sRGB 线性光重采样，细线 / 文字不再有锯齿（原版为最近邻缩放）。
 - **图库 / 裁剪 / 卡面标志**：3 列图库、160:101 固定比例裁剪（双指缩放、拖动、缩放按钮）、
   京津冀 / 上海 / 泉城通 / 银川 标志、圆角裁切。
-- **Miuix（HyperOS）界面**：SukiSU 风格状态卡、灰底白卡分组、澎湃蓝 / 动态取色 / 8 个预设色 /
+- **Miuix（HyperOS）界面**：大圆角状态卡、灰底白卡分组、澎湃蓝 / 动态取色 / 8 个预设色 /
   深色模式 / 过渡动画、底部悬浮导航。
 - **其他**：卡面重命名、隐藏桌面图标（带通知入口防丢）、hook 缓存清理、一键重启卡包。
 
@@ -98,7 +98,7 @@ docs/      规格、进度记录、截图
 
 [GPL-3.0](LICENSE)。本项目包含 / 链接了以下开源项目：
 
-- 原版项目：[DIY NFC卡面图片](https://github.com/zhizi42/DIY_NFC_CardFace) v2.4（zhizi42，GPL-3.0）
+- 原版项目：[DIY NFC卡面图片](https://github.com/Xposed-Modules-Repo/com.zhizi42.diymiuicard) v2.4（zhizi42，GPL-3.0）
 - UI 组件：[Miuix](https://github.com/miuix-kotlin-multiplatform/miuix)（Yukonga，Apache-2.0）
 - 模块框架：[LSPosed](https://github.com/LSPosed/LSPosed)（GPL-3.0）、[libxposed API](https://github.com/LibXposed/libxposed-api)（Apache-2.0）
 - Dex 定位：[DexKit](https://github.com/LuckyPray/DexKit)（LuckyPray，Apache-2.0）

@@ -341,7 +341,7 @@ fun AboutScreen(
                     AboutLine(
                         "原版项目",
                         "「DIY NFC卡面图片」v2.4，作者 zhizi42，GPL-3.0；" +
-                            "github.com/zhizi42/DIY_NFC_CardFace",
+                            "github.com/Xposed-Modules-Repo/com.zhizi42.diymiuicard",
                     )
                     AboutLine(
                         "Miuix 0.9.4",
