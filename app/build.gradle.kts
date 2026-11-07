@@ -13,7 +13,7 @@ android {
     buildToolsVersion = "37.0.0"
 
     defaultConfig {
-        applicationId = "com.dsh.miuix.cardface"
+        applicationId = "io.github.miambao.cardface"
         minSdk = 26
         targetSdk = 36
         versionCode = 5

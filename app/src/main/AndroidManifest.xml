@@ -48,13 +48,13 @@
 
         <provider
             android:name=".core.ImageProvider"
-            android:authorities="com.dsh.miuix.cardface.images"
+            android:authorities="io.github.miambao.cardface.images"
             android:exported="true"
             android:grantUriPermissions="true" />
 
         <provider
             android:name=".core.HookPrefsProvider"
-            android:authorities="com.dsh.miuix.cardface.preference"
+            android:authorities="io.github.miambao.cardface.preference"
             android:exported="true"
             android:grantUriPermissions="true" />
     </application>
