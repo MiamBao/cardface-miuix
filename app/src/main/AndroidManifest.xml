@@ -7,7 +7,6 @@
 
     <queries>
         <package android:name="com.miui.tsmclient" />
-        <package android:name="com.finshell.wallet" />
         <package android:name="org.lsposed.manager" />
     </queries>
 

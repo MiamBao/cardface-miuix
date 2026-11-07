@@ -41,7 +41,6 @@ data class GalleryImage(val file: File) {
 
 enum class WalletKind(val packageName: String, val label: String) {
     MIUI("com.miui.tsmclient", "小米智能卡"),
-    COLOROS("com.finshell.wallet", "ColorOS 卡包"),
 }
 
 /** 模块与卡包的运行状态。 */

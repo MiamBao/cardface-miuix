@@ -162,7 +162,7 @@ fun SettingsScreen(
                     summary = DeviceBridge.walletLabel(walletKind),
                     onClick = {
                         if (walletKind == null) {
-                            info = "没有找到卡包" to "本机没有安装小米智能卡或 ColorOS 卡包，安装后才能替换卡面。"
+                            info = "没有找到卡包" to "本机没有安装小米智能卡，安装后才能替换卡面。"
                         } else if (!DeviceBridge.openWallet(context, walletKind)) {
                             info = "打不开卡包" to "系统没有返回 ${walletKind.label} 的启动入口，请手动打开。"
                         }
@@ -185,7 +185,7 @@ fun SettingsScreen(
                         info = "启用模块与作用域" to buildString {
                             appendLine("1. 打开你的 LSPosed 管理器（本机可能是寄生 / 隐藏模式，桌面没有图标）。")
                             appendLine("2. 在模块列表里启用「卡面工坊」。")
-                            appendLine("3. 勾选作用域：小米智能卡（com.miui.tsmclient）、ColorOS 卡包。")
+                            appendLine("3. 勾选作用域：小米智能卡（com.miui.tsmclient）。")
                             appendLine("4. 强行停止小米智能卡，再打开它把卡面浏览一遍。")
                             appendLine("5. 回到卡面工坊下拉刷新，就能看到卡面了。")
                             appendLine()

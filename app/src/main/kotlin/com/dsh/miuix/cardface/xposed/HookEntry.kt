@@ -9,9 +9,8 @@ import io.github.libxposed.api.XposedModuleInterface
  * 由 APK 根目录 `META-INF/xposed/java_init.list` 指定：
  *   `com.dsh.miuix.cardface.xposed.HookEntry`
  *
- * 只在两个卡包进程里工作：
- *  - com.miui.tsmclient  -> ostype 0（MIUI 卡包）
- *  - com.finshell.wallet -> ostype 1（ColorOS 卡包）
+ * 只在小米智能卡进程里工作：
+ *  - com.miui.tsmclient -> ostype 0
  * 其它包直接返回。
  */
 class HookEntry : XposedModule() {
@@ -28,7 +27,6 @@ class HookEntry : XposedModule() {
         val packageName = param.packageName
         val osType = when (packageName) {
             MethodLocator.MIUI_PACKAGE -> MethodLocator.OS_MIUI
-            MethodLocator.COLOROS_PACKAGE -> MethodLocator.OS_COLOROS
             else -> {
                 XLog.d("skip unsupported package: $packageName")
                 return

@@ -27,10 +27,7 @@ class HookEngine(
     private val settingsRepo = SettingsRepository(module)
     private val locator = MethodLocator(osType, classLoader, appInfo)
 
-    private val walletPackage: String = when (osType) {
-        MethodLocator.OS_MIUI -> MethodLocator.MIUI_PACKAGE
-        else -> MethodLocator.COLOROS_PACKAGE
-    }
+    private val walletPackage: String = MethodLocator.MIUI_PACKAGE
 
     private val walletDataDir: String = appInfo.dataDir ?: "/data/data/$walletPackage"
 
@@ -194,14 +191,9 @@ class HookEngine(
 
     private fun installAutoHooks(settings: HookSettings) {
         val slots = ArrayList<Int>()
-        if (osType == MethodLocator.OS_MIUI) {
-            slots.add(MethodLocator.SLOT_URL_FROM_ARG)
-            slots.add(MethodLocator.SLOT_REPLACE_ARG)
-            if (settings.superLand) slots.add(MethodLocator.SLOT_SUPER_ISLAND)
-        } else {
-            // ColorOS 只有一个 hook 点，复用 slot 0 的缓存文件 cardface.method.0.txt
-            slots.add(MethodLocator.SLOT_URL_FROM_ARG)
-        }
+        slots.add(MethodLocator.SLOT_URL_FROM_ARG)
+        slots.add(MethodLocator.SLOT_REPLACE_ARG)
+        if (settings.superLand) slots.add(MethodLocator.SLOT_SUPER_ISLAND)
         val found = locator.findTargets(slots)
         for (slot in slots) {
             if (slot == MethodLocator.SLOT_REPLACE_ARG) {
@@ -227,10 +219,8 @@ class HookEngine(
      *  - MIUI #0  ：从参数读 URL，直接返回替换值（load=true,  replaceArg=false）
      *  - MIUI #1  ：从参数读 URL，替换参数（load=true,  replaceArg=true）
      *  - MIUI #10 ：从返回值读 URL（load=false, replaceArg=false）
-     *  - ColorOS  ：从参数读 URL，替换参数（load=true, replaceArg=true）
      */
     private fun flagsForSlot(slot: Int): Pair<Boolean, Boolean> = when {
-        osType != MethodLocator.OS_MIUI -> true to true
         slot == MethodLocator.SLOT_URL_FROM_ARG -> true to false
         slot == MethodLocator.SLOT_REPLACE_ARG -> true to true
         slot == MethodLocator.SLOT_SUPER_ISLAND -> false to false

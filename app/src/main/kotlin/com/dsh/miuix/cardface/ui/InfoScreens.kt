@@ -98,7 +98,7 @@ fun GuideScreen(
                 NumberedStep(
                     index = 1,
                     title = "在 LSPosed 里启用模块",
-                    description = "勾选作用域：小米智能卡 / ColorOS 卡包。改完建议重启一次手机。",
+                    description = "勾选作用域：小米智能卡。改完建议重启一次手机。",
                     done = status?.lsposedInstalled == true && status.moduleActivated,
                     actionText = "打开 LSPosed",
                     onAction = {
@@ -153,7 +153,7 @@ fun GuideScreen(
             "打开方式：\n" +
             "1. 下拉通知栏；\n" +
             "2. 点「Android 系统 · Xposed 模块已更新」或「LSPosed」通知；\n" +
-            "3. 在模块列表里启用「卡面工坊」，勾选作用域（小米智能卡 / ColorOS 卡包）；\n" +
+            "3. 在模块列表里启用「卡面工坊」，勾选作用域（小米智能卡）；\n" +
             "4. 强行停止卡包，再打开卡包把卡面浏览一遍。",
         onDismiss = { showManagerHelp = false },
     )
@@ -167,9 +167,9 @@ private val FAQ_ITEMS = listOf(
     "改完卡面没有变化？" to
         "替换是在卡包进程里生效的，保存后要把卡包从后台划掉再重新打开（或等系统杀掉进程）。设置页的「清除 hook 点缓存」也会顺带重启卡包。",
     "识别不到任何卡面？" to
-        "先在 LSPosed 里确认「卡面工坊」已启用、作用域已勾选小米智能卡 / ColorOS 卡包，然后打开卡包把卡面浏览一遍，再回到首页下拉刷新。",
+        "先在 LSPosed 里确认「卡面工坊」已启用、作用域已勾选小米智能卡，然后打开卡包把卡面浏览一遍，再回到首页下拉刷新。",
     "LSPosed 作用域是什么？" to
-        "作用域决定模块要注入哪些应用。本模块只作用于小米智能卡和 ColorOS 卡包，勾选这两个就够了，不要全选。",
+        "作用域决定模块要注入哪些应用。本模块只作用于小米智能卡，勾选它就够了，不要全选。",
     "为什么有些小图没被识别？" to
         "默认会过滤掉卡包里的小图标（w270h480、logo、Mibi 之类），避免列表里塞满无关图片。想全部显示可以打开设置里的「显示全部卡面」。",
     "黑名单有什么用？" to
@@ -177,7 +177,7 @@ private val FAQ_ITEMS = listOf(
     "图片会被上传吗？" to
         "不会。所有图片都在本机处理（裁剪和缩放都在手机上完成），应用没有上传逻辑，也不收集任何使用数据。",
     "支持哪些卡包？" to
-        "目前支持小米智能卡（含小米超级岛卡面）和 ColorOS 卡包。其他卡包暂不支持。",
+        "目前支持小米智能卡（含小米超级岛卡面）。其他卡包暂不支持。",
 )
 
 @Composable
@@ -283,7 +283,7 @@ fun AboutScreen(
                 }
                 Spacer(Modifier.height(14.dp))
                 Text(
-                    text = "把小米智能卡 / ColorOS 卡包里千篇一律的卡面换成你喜欢的图片。\n" +
+                    text = "把小米智能卡里千篇一律的卡面换成你喜欢的图片。\n" +
                         "基于原版「DIY NFC卡面图片」v2.4 重写：界面换成 Miuix（HyperOS 风格），" +
                         "图片缩放换成 Lanczos3（不再有锯齿），替换图通过 file:// 直接交给卡包加载。",
                     style = MiuixTheme.textStyles.body2,
@@ -319,7 +319,6 @@ fun AboutScreen(
                     AboutLine("高质量缩放", "缩放感知 Lanczos3 + 线性光，960×606 输出，细线/文字不再锯齿。")
                     AboutLine("替换方式", "替换图复制到卡包私有目录后以 file:// 加载（复制步骤需要 root）。")
                     AboutLine("小米智能卡", "在 Xiaomi 15 Pro / HyperOS（LSPosed 2.2.1）上真机验证通过。")
-                    AboutLine("ColorOS 卡包", "仅按通用实现做了兼容，未做真机验证（见下方免责声明）。")
                     AboutLine("外观可调", "澎湃蓝 / 动态取色 / 8 个预设色 / 深色模式 / 过渡动画。")
                     AboutLine("演示模式", "没装卡包也能完整体验选图、裁剪、卡面标志流程。")
                 }
@@ -403,12 +402,6 @@ fun AboutScreen(
                     cornerRadius = 20.dp,
                     insideMargin = PaddingValues(20.dp),
                 ) {
-                    AboutLine(
-                        "ColorOS 卡包",
-                        "本应用未在 ColorOS 真机上测试过 ColorOS 卡包的替换效果；" +
-                            "相关实现只是按通用包名/加载逻辑做了兼容，可能出现识别不到卡面、" +
-                            "替换不生效或卡包显示异常等情况，请自行评估后使用。",
-                    )
                     AboutLine(
                         "小米智能卡",
                         "在 Xiaomi 15 Pro / HyperOS + LSPosed 2.2.1 环境验证通过；" +

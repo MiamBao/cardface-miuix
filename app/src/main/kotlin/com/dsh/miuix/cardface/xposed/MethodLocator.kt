@@ -21,11 +21,7 @@ class MethodLocator(
 
     private var bridge: DexKitBridge? = null
 
-    private val walletPackage: String = when (osType) {
-        OS_MIUI -> MIUI_PACKAGE
-        OS_COLOROS -> COLOROS_PACKAGE
-        else -> MIUI_PACKAGE
-    }
+    private val walletPackage: String = MIUI_PACKAGE
 
     private val filesDir: File by lazy {
         val dataDir = appInfo.dataDir ?: "/data/data/$walletPackage"
@@ -197,7 +193,6 @@ class MethodLocator(
 
     private fun locateWithDexKit(dexKit: DexKitBridge, slot: Int): Method? {
         val data = when {
-            osType == OS_COLOROS -> locateColorOs(dexKit)
             slot == SLOT_URL_FROM_ARG -> locateMiui0(dexKit)
             slot == SLOT_REPLACE_ARG -> locateMiui1(dexKit)
             slot == SLOT_SUPER_ISLAND -> locateMiuiIsland(dexKit)
@@ -309,37 +304,12 @@ class MethodLocator(
         return result.firstOrNull()
     }
 
-    /** ColorOS 卡包：CircleNetworkImageView 中 void(String)。 */
-    private fun locateColorOs(dexKit: DexKitBridge): org.luckypray.dexkit.result.MethodData? {
-        val strict = dexKit.findMethod {
-            matcher {
-                declaredClass(COLOROS_IMAGE_VIEW)
-                returnType("void")
-                paramTypes("java.lang.String")
-            }
-        }
-        if (strict.isNotEmpty()) {
-            if (strict.size > 1) XLog.w("ColorOS matched ${strict.size} methods: " + describe(strict))
-            return strict[0]
-        }
-        val anySingle = dexKit.findMethod {
-            matcher {
-                declaredClass(COLOROS_IMAGE_VIEW)
-                returnType("void")
-                paramCount(1)
-            }
-        }
-        if (anySingle.size > 1) XLog.w("ColorOS single-param matched ${anySingle.size}: " + describe(anySingle))
-        return anySingle.firstOrNull()
-    }
-
     private fun describe(list: Collection<org.luckypray.dexkit.result.MethodData>): String =
         list.take(8).joinToString { "${it.className}#${it.methodName}(${it.paramTypeNames.joinToString(",")})" }
 
     // ---------- 反射兜底 ----------
 
     private fun locateWithReflection(slot: Int): Method? = when {
-        osType == OS_COLOROS -> scanDeclaredMethods(COLOROS_IMAGE_VIEW, null, expectsForSlot(slot))
         slot == SLOT_REPLACE_ARG -> {
             // 已知候选：Glide RequestManager.load(String) —— 语义与 MIUI#1 完全一致（替换参数）。
             // 注意 load(String) 返回 RequestBuilder 而不是 void，所以要单独给候选签名。
@@ -440,10 +410,6 @@ class MethodLocator(
     )
 
     private fun expectsForSlot(slot: Int): List<Expect> = when {
-        osType == OS_COLOROS -> listOf(
-            Expect("void", 1, "java.lang.String"),
-            Expect("void", 1, null),
-        )
         slot == SLOT_URL_FROM_ARG -> listOf(
             Expect("java.lang.String", 0, null),
             Expect("java.lang.String", 1, "java.lang.String"),
@@ -494,19 +460,16 @@ class MethodLocator(
 
     companion object {
         const val OS_MIUI = 0
-        const val OS_COLOROS = 1
 
         const val SLOT_URL_FROM_ARG = 0
         const val SLOT_REPLACE_ARG = 1
         const val SLOT_SUPER_ISLAND = 10
 
         const val MIUI_PACKAGE = "com.miui.tsmclient"
-        const val COLOROS_PACKAGE = "com.finshell.wallet"
         private const val MIUI_UTIL_PACKAGE = "com.miui.tsmclient.util"
         private const val GLIDE_PACKAGE = "com.bumptech.glide"
         private const val GLIDE_REQUEST_MANAGER = "com.bumptech.glide.RequestManager"
         private const val CARD_INFO_CLASS = "com.miui.tsmclient.entity.CardInfo"
-        private const val COLOROS_IMAGE_VIEW = "com.finshell.finui.widget.imageview.CircleNetworkImageView"
         private const val MIUI_CUSTOM_GLIDE_URL_GUESS = "com.miui.tsmclient.util.CustomGlideUrl"
 
         @Volatile

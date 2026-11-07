@@ -556,7 +556,7 @@ private fun EmptyHomeCard(
         NumberedStep(
             index = 1,
             title = "在 LSPosed 里启用「卡面工坊」",
-            description = "勾选作用域：小米智能卡 / ColorOS 卡包",
+            description = "勾选作用域：小米智能卡",
             done = status.lsposedInstalled && status.moduleActivated,
         )
         NumberedStep(
