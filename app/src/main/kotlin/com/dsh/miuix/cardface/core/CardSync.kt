@@ -9,30 +9,6 @@ package com.dsh.miuix.cardface.core
  */
 object CardSync {
 
-    /** 映射快照文件名：写在卡包 files/ 下，hook 进程冷启动时直接读，不依赖跨进程 provider。 */
-    const val MAP_SNAPSHOT_NAME = "cardface.map"
-
-    /** 把 URL -> 文件名 的映射写成快照文件复制到卡包私有目录（需要 root；失败不影响主流程）。 */
-    fun writeMapSnapshot(context: android.content.Context, prefs: AppPrefs): Boolean {
-        val kind = WalletApps.primary(context) ?: return false
-        val entries = prefs.mappingPairs()
-        val text = buildString {
-            entries.forEach { (url, name) ->
-                append(url).append('\t').append(name).append('\n')
-            }
-        }
-        return try {
-            val tmp = java.io.File(context.cacheDir, MAP_SNAPSHOT_NAME)
-            tmp.writeText(text)
-            val destDir = "/proc/1/root/data/data/${kind.packageName}/files"
-            RootShell.exec(
-                "mkdir -p \"$destDir\" && cp -f \"${tmp.absolutePath}\" \"$destDir/$MAP_SNAPSHOT_NAME\" && chmod 644 \"$destDir/$MAP_SNAPSHOT_NAME\"",
-                timeoutMs = 8000,
-            ).ok
-        } catch (_: Throwable) {
-            false
-        }
-    }
 
     /**
      * 卡包私有图片目录。
@@ -70,8 +46,6 @@ object CardSync {
             val file = store.find(name) ?: return@forEach
             if (RootShell.copyIntoDir(file.absolutePath, dir, name).ok) copied++
         }
-        // 同时刷新映射快照：冷启动时 hook 先读它，避免第一屏回退默认卡面。
-        writeMapSnapshot(context, prefs)
         return copied
     }
 }

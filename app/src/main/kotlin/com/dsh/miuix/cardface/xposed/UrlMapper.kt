@@ -74,19 +74,6 @@ object UrlMapper {
             url.contains(SMALL_ICON_DOOR_LOGO) ||
             url.contains(SMALL_ICON_MIBI)
 
-    private val SIZE_SEGMENT = Regex("/w\\d+h\\d+(?=[/?#]|$)")
-
-    /** 去掉 URL 里的 `w1080h1920` 尺寸段，用于缩略图/原图变体之间做兜底匹配。 */
-    fun normalizedUrl(url: String): String = url.replace(SIZE_SEGMENT, "")
-
-    /** 先精确查映射，再按去掉尺寸段的 URL 兜底匹配。 */
-    fun lookupMapping(url: String, mappings: Map<String, String>): String? {
-        mappings[url]?.let { return it }
-        val normalized = normalizedUrl(url)
-        if (normalized == url) return null
-        return mappings.entries.firstOrNull { normalizedUrl(it.key) == normalized }?.value
-    }
-
     fun isHttpUrl(value: String): Boolean =
         value.startsWith("https://") || value.startsWith("http://")
 
@@ -118,8 +105,8 @@ object UrlMapper {
             return Result(TEST_IMAGE_URI, track)
         }
 
-        // 2. 查映射（含缩略图 URL 兜底）；没有映射 -> 保留原图。
-        val replacement = lookupMapping(url, env.mappings)
+        // 2. 查映射；没有映射 -> 保留原图。
+        val replacement = env.mappings[url]
         if (replacement.isNullOrEmpty()) return Result("", track)
 
         // 3. 网络地址原样交给卡包。

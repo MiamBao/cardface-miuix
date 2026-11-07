@@ -40,10 +40,6 @@ class SettingsRepository(private val module: XposedModule) {
     @Volatile
     private var providerReadable = false
 
-    /** 卡包 files/cardface.map 里的映射快照（App 写入）。冷启动时 provider 可能还没就绪，先用它兜底。 */
-    @Volatile
-    private var localMappings: Map<String, String> = emptyMap()
-
     @Volatile
     private var dirty = true
 
@@ -111,20 +107,13 @@ class SettingsRepository(private val module: XposedModule) {
     // ---------- 读 ----------
 
     fun refresh(force: Boolean = false) {
-        loadLocalMappings()
         val now = SystemClock.elapsedRealtime()
         if (!force && !dirty && now - lastProviderReadMs < PROVIDER_REFRESH_INTERVAL_MS) return
         dirty = false
         lastProviderReadMs = now
         val p = provider ?: return
-        var settings = p.readAll(GROUP_SETTINGS)
-        var cards = p.readAll(GROUP_CARD_URLS)
-        if (settings == null && cards == null && !providerReadable) {
-            // 卡包冷启动时模块 App 的 provider 可能还在初始化，稍等再试一次。
-            try { Thread.sleep(20) } catch (_: InterruptedException) {}
-            settings = p.readAll(GROUP_SETTINGS)
-            cards = p.readAll(GROUP_CARD_URLS)
-        }
+        val settings = p.readAll(GROUP_SETTINGS)
+        val cards = p.readAll(GROUP_CARD_URLS)
         if (settings != null || cards != null) {
             providerReadable = true
             if (settings != null) providerSettings = settings
@@ -201,31 +190,9 @@ class SettingsRepository(private val module: XposedModule) {
         )
     }
 
-    /** 读卡包 files/cardface.map：每行 `url<TAB>文件名`。 */
-    private fun loadLocalMappings() {
-        val ctx = context ?: return
-        try {
-            val file = java.io.File(ctx.filesDir, "cardface.map")
-            if (!file.isFile) return
-            val map = LinkedHashMap<String, String>()
-            file.forEachLine { line ->
-                val tab = line.indexOf('\t')
-                if (tab > 0 && tab < line.length - 1) {
-                    val url = line.substring(0, tab)
-                    val name = line.substring(tab + 1)
-                    if (url.isNotEmpty() && name.isNotEmpty()) map[url] = name
-                }
-            }
-            localMappings = map
-        } catch (_: Throwable) {
-            // 快照读失败不影响主流程：继续用 provider / framework。
-        }
-    }
-
     /** settings 里除保留键外的 String 项 = url -> 替换值（文件名 / http 地址）。 */
     fun mappings(): Map<String, String> {
         val out = LinkedHashMap<String, String>()
-        if (localMappings.isNotEmpty()) out.putAll(localMappings)
         mergeSettings().forEach { (key, value) ->
             if (key in RESERVED_KEYS) return@forEach
             if (value is String && value.isNotEmpty()) out[key] = value

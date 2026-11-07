@@ -389,8 +389,7 @@ fun SettingsScreen(
                             destructive = true,
                             onConfirm = {
                                 prefs.clearCardUrls()
-                                com.dsh.miuix.cardface.core.CardSync.writeMapSnapshot(context, prefs)
-                                com.dsh.miuix.cardface.core.DemoCards.clearImages(model.store)
+                                        com.dsh.miuix.cardface.core.DemoCards.clearImages(model.store)
                                 model.bumpStore()
                                 toast("已清空卡面记录，打开卡包浏览后会重新识别")
                             },

@@ -162,7 +162,6 @@ fun EditorScreen(
                 runCatching {
                     withContext(Dispatchers.IO) {
                         com.dsh.miuix.cardface.core.CardSync.copyImage(context, store, finalName)
-                        com.dsh.miuix.cardface.core.CardSync.writeMapSnapshot(context, prefs)
                     }
                 }
                 draft.clearPendingImage()
