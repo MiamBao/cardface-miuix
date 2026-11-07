@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- HyperOS 风格：白色底，颜色渐变全部由前景承载（参考 HyperDay 图标）。 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FFFEFEFE" />
+</shape>

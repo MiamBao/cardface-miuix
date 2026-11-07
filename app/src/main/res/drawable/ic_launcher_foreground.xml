@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 图标：白色底 + 关于页同款 BankCards 图标，改用澎湃渐变（珊瑚粉→洋红→靛紫，取自 HyperDay）。 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="1224"
+    android:viewportHeight="1224">
+
+    <group
+        android:pivotX="612"
+        android:pivotY="612"
+        android:scaleX="0.58"
+        android:scaleY="0.58">
+        <group
+            android:scaleY="-1"
+            android:translateY="1224">
+            <path
+                android:fillType="nonZero"
+                android:pathData="M1044,232 Q1085,254 1107,295 Q1117,316 1119.5,345.5 Q1122,375 1122,445 V741 H102 V445 Q102,375 104.5,345.5 Q107,316 117,295 Q139,254 180,232 Q201,222 230.5,219.5 Q260,217 330,217 H894 Q964,217 993.5,219.5 Q1023,222 1044,232 Z M734,395 V438 Q734,470 747.5,483 Q761,496 792,496 H898 Q929,496 942.5,483 Q956,470 956,438 V395 Q956,363 942.5,349.5 Q929,336 898,336 H792 Q761,336 747.5,349.5 Q734,363 734,395 Z M1107,930 Q1085,971 1044,992 Q1023,1002 993.5,1004.5 Q964,1007 894,1007 H330 Q260,1007 230.5,1004.5 Q201,1002 180,992 Q139,971 117,930 Q108,911 105,884 Q102,857 102,807 H1122 Q1122,857 1119,884 Q1116,911 1107,930 Z">
+                <aapt:attr name="android:fillColor">
+                    <gradient
+                        android:type="linear"
+                        android:startX="102"
+                        android:startY="1007"
+                        android:endX="1122"
+                        android:endY="217">
+                        <item android:offset="0.0" android:color="#FFFF7E74" />
+                        <item android:offset="0.25" android:color="#FFEC7FA0" />
+                        <item android:offset="0.5" android:color="#FFD07BD4" />
+                        <item android:offset="0.75" android:color="#FFA878F3" />
+                        <item android:offset="1.0" android:color="#FF6A5BFF" />
+                    </gradient>
+                </aapt:attr>
+            </path>
+        </group>
+    </group>
+</vector>

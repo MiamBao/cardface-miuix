@@ -1,0 +1,25 @@
+# Gradle / build
+.gradle/
+build/
+*/build/
+local.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Signing material（签名文件与密码不要提交）
+keystore/
+keystore.properties
+*.jks
+*.keystore
+
+# 产物
+*.apk
+*.aab
+*.zip
+
+# 临时文件
+/tmp/
