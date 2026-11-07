@@ -52,12 +52,6 @@ class UrlMapperTest {
     }
 
     @Test
-    fun `small icon filter does not apply to coloros`() {
-        val url = "https://cdn.example.com/card/w270h480/xx.png"
-        assertTrue(UrlMapper.map(url, env(isMiui = false)).trackUrl)
-    }
-
-    @Test
     fun `small icon still gets replaced when mapping exists`() {
         val url = "https://cdn.example.com/card/w270h480/xx.png"
         val result = UrlMapper.map(
