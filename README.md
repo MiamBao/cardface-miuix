@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/icon.png" width="112" alt="卡面工坊"/>
+  <img src="docs/icon.png" width="200" alt="卡面工坊"/>
 </p>
 
 <h1 align="center">卡面工坊</h1>
