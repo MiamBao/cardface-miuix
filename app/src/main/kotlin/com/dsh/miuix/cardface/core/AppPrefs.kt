@@ -13,11 +13,31 @@ import androidx.compose.runtime.setValue
  * 这两个 SharedPreferences 会通过 RemotePreferences 供被 hook 的卡包进程读取，
  * 因此键名与原版保持一致（hide_icon / show_all_cards / super_land / ...）。
  */
+enum class SyncMode(val key: String, val label: String) {
+    AUTO("auto", "自动（推荐）"),
+    REMOTE("remote", "仅远程（LSPosed）"),
+    LOCAL("local", "仅本地");
+
+    companion object {
+        fun fromKey(key: String?): SyncMode = entries.firstOrNull { it.key == key } ?: AUTO
+    }
+}
+
 class AppPrefs(context: Context) {
 
     private val appContext = context.applicationContext
-    val settings: SharedPreferences = appContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
-    val urls: SharedPreferences = appContext.getSharedPreferences("card_urls", Context.MODE_PRIVATE)
+    private val rawSettings: SharedPreferences =
+        appContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    private val rawUrls: SharedPreferences =
+        appContext.getSharedPreferences("card_urls", Context.MODE_PRIVATE)
+
+    /** 映射同步方式：auto = 本地 + 远程双写；remote/local 只写对应一侧。 */
+    var syncMode: SyncMode
+        get() = SyncMode.fromKey(rawSettings.getString("sync_mode", SyncMode.AUTO.key))
+        set(v) = settings.edit().putString("sync_mode", v.key).apply().also { touch() }
+
+    val settings: SharedPreferences = MirrorPrefs(rawSettings, "settings") { syncMode }
+    val urls: SharedPreferences = MirrorPrefs(rawUrls, "card_urls") { syncMode }
 
     /** 数据版本号；写入后自增，界面用它触发重读。 */
     var revision by mutableIntStateOf(0)

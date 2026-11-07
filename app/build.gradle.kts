@@ -16,8 +16,8 @@ android {
         applicationId = "io.github.miambao.cardface"
         minSdk = 26
         targetSdk = 36
-        versionCode = 13
-        versionName = "1.0.5"
+        versionCode = 14
+        versionName = "1.0.6"
     }
 
     // 签名信息从本地的 keystore.properties 读取（该文件与 keystore/ 都不入库）。
@@ -70,5 +70,6 @@ dependencies {
     implementation(project(":imaging"))
     implementation("org.luckypray:dexkit:2.3.0")
     compileOnly("io.github.libxposed:api:101.0.1")
+    implementation("io.github.libxposed:service:101.0.0")
     testImplementation("junit:junit:4.13.2")
 }

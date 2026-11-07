@@ -8,6 +8,7 @@ import top.yukonga.miuix.kmp.icon.extended.Ok
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
+import com.dsh.miuix.cardface.core.SyncMode
 import com.dsh.miuix.cardface.core.ThemeColors
 import com.dsh.miuix.cardface.core.AppPrefs
 import androidx.compose.ui.graphics.toArgb
@@ -108,6 +109,7 @@ fun SettingsScreen(
     var versionTapCount by remember { mutableIntStateOf(0) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showDarkDialog by remember { mutableStateOf(false) }
+    var showSyncDialog by remember { mutableStateOf(false) }
 
     fun toast(message: String) {
         scope.launch { model.notify(message) }
@@ -389,6 +391,7 @@ fun SettingsScreen(
                             destructive = true,
                             onConfirm = {
                                 prefs.clearCardUrls()
+                                com.dsh.miuix.cardface.core.CardSync.writeMapSnapshot(context, prefs)
                                         com.dsh.miuix.cardface.core.DemoCards.clearImages(model.store)
                                 model.bumpStore()
                                 toast("已清空卡面记录，打开卡包浏览后会重新识别")
@@ -423,6 +426,13 @@ fun SettingsScreen(
                     startAction = { SettingRowIcon(MiuixIcons.Tune) },
                         summary = "执行 adb shell 命令、看 hook 日志、查卡包入口",
                         onClick = onOpenDevConsole,
+                    )
+                    RowDivider()
+                    ArrowPreference(
+                        title = "映射同步方式",
+                        startAction = { SettingRowIcon(MiuixIcons.Tune) },
+                        summary = prefs.syncMode.label + "（推荐自动）",
+                        onClick = { showSyncDialog = true },
                     )
                     RowDivider()
                     SwitchPreference(
@@ -547,6 +557,43 @@ fun SettingsScreen(
             TextButton(
                 text = "关闭",
                 onClick = { showThemeDialog = false },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+
+    // 映射同步方式选择
+    if (showSyncDialog) {
+        OverlayDialog(
+            show = true,
+            title = "映射同步方式",
+            summary = "自动：本地 + LSPosed 远程双写（推荐）；仅远程：只写 LSPosed；仅本地：只写本地。切换后重启卡包生效。",
+            onDismissRequest = { showSyncDialog = false },
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                SyncMode.entries.forEach { mode ->
+                    val selected = prefs.syncMode == mode
+                    TextButton(
+                        text = if (selected) "✓  ${mode.label}" else mode.label,
+                        onClick = {
+                            prefs.syncMode = mode
+                            showSyncDialog = false
+                            com.dsh.miuix.cardface.core.CardSync.writeMapSnapshot(context, prefs)
+                            toast("同步方式已切换：${mode.label}，重启卡包后生效")
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = if (selected) {
+                            ButtonDefaults.textButtonColorsPrimary()
+                        } else {
+                            ButtonDefaults.textButtonColors()
+                        },
+                    )
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            TextButton(
+                text = "关闭",
+                onClick = { showSyncDialog = false },
                 modifier = Modifier.fillMaxWidth(),
             )
         }

@@ -53,6 +53,11 @@
             android:grantUriPermissions="true" />
 
         <provider
+            android:name="io.github.libxposed.service.XposedProvider"
+            android:authorities="${applicationId}.XposedService"
+            android:exported="true" />
+
+        <provider
             android:name=".core.HookPrefsProvider"
             android:authorities="io.github.miambao.cardface.preference"
             android:exported="true"

@@ -9,6 +9,33 @@ package com.dsh.miuix.cardface.core
  */
 object CardSync {
 
+    /** 映射快照：卡包 files/cardface.map，hook 冷启动直接读（无 IPC）。 */
+    const val MAP_SNAPSHOT_NAME = "cardface.map"
+
+    fun writeMapSnapshot(context: android.content.Context, prefs: AppPrefs): Boolean {
+        val kind = WalletApps.primary(context) ?: return false
+        val text = buildString {
+            prefs.mappingPairs().forEach { (url, name) ->
+                append(url).append('\t').append(name).append('\n')
+            }
+        }
+        return try {
+            val tmp = java.io.File(context.cacheDir, MAP_SNAPSHOT_NAME)
+            tmp.writeText(text)
+            val dir = "/proc/1/root/data/data/${kind.packageName}/files"
+            val dest = "$dir/$MAP_SNAPSHOT_NAME"
+            val r = RootShell.exec(
+                "mkdir -p \"$dir\" && cp -f \"${tmp.absolutePath}\" \"$dest\" && chmod 644 \"$dest\"",
+                timeoutMs = 8000,
+            )
+            if (!r.ok) return false
+            val check = RootShell.exec("cat \"$dest\"", timeoutMs = 5000)
+            check.ok && check.stdout.length == text.length
+        } catch (_: Throwable) {
+            false
+        }
+    }
+
 
     /**
      * 卡包私有图片目录。
@@ -46,6 +73,7 @@ object CardSync {
             val file = store.find(name) ?: return@forEach
             if (RootShell.copyIntoDir(file.absolutePath, dir, name).ok) copied++
         }
+        writeMapSnapshot(context, prefs)
         return copied
     }
 }

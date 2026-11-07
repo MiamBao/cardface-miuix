@@ -40,6 +40,10 @@ class SettingsRepository(private val module: XposedModule) {
     @Volatile
     private var providerReadable = false
 
+    /** 卡包 files/cardface.map 快照（App 写入），作为最低优先级兜底。 */
+    @Volatile
+    private var snapshotMappings: Map<String, String> = emptyMap()
+
     @Volatile
     private var dirty = true
 
@@ -71,6 +75,7 @@ class SettingsRepository(private val module: XposedModule) {
 
     fun attachContext(context: Context) {
         this.context = context.applicationContext ?: context
+        loadSnapshot()
         val p = ProviderPrefs(this.context!!)
         provider = p
         registerObserver()
@@ -124,6 +129,8 @@ class SettingsRepository(private val module: XposedModule) {
 
     fun mergeSettings(): Map<String, Any?> {
         val out = LinkedHashMap<String, Any?>()
+        // 远程（LSPosed 框架）优先级最高；provider 次之。合并顺序：provider -> framework。
+        out.putAll(providerSettings)
         frameworkSettings?.let { prefs ->
             try {
                 out.putAll(prefs.all)
@@ -131,8 +138,24 @@ class SettingsRepository(private val module: XposedModule) {
                 XLog.w("read framework settings failed", t)
             }
         }
-        out.putAll(providerSettings)
         return out
+    }
+
+    private fun loadSnapshot() {
+        val ctx = context ?: return
+        try {
+            val file = java.io.File(ctx.filesDir, "cardface.map")
+            if (!file.isFile) return
+            val map = LinkedHashMap<String, String>()
+            file.forEachLine { line ->
+                val tab = line.indexOf('\t')
+                if (tab in 1 until line.length - 1) {
+                    map[line.substring(0, tab)] = line.substring(tab + 1)
+                }
+            }
+            snapshotMappings = map
+        } catch (_: Throwable) {
+        }
     }
 
     fun mergeCardUrls(): Map<String, Any?> {
@@ -193,6 +216,8 @@ class SettingsRepository(private val module: XposedModule) {
     /** settings 里除保留键外的 String 项 = url -> 替换值（文件名 / http 地址）。 */
     fun mappings(): Map<String, String> {
         val out = LinkedHashMap<String, String>()
+        // 快照优先级最低：先放快照，再被 provider，最后被远程覆盖。
+        out.putAll(snapshotMappings)
         mergeSettings().forEach { (key, value) ->
             if (key in RESERVED_KEYS) return@forEach
             if (value is String && value.isNotEmpty()) out[key] = value
