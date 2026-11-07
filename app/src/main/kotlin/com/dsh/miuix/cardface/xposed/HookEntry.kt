@@ -15,6 +15,23 @@ import io.github.libxposed.api.XposedModuleInterface
  */
 class HookEntry : XposedModule() {
 
+    /** onPackageLoaded 阶段提前装好的引擎；首屏图片加载前就生效，避免冷启动第一屏掉图。 */
+    @Volatile
+    private var earlyEngine: HookEngine? = null
+
+    override fun onPackageLoaded(param: XposedModuleInterface.PackageLoadedParam) {
+        if (param.packageName != MethodLocator.MIUI_PACKAGE) return
+        XLog.attach(this)
+        try {
+            val engine = HookEngine(this, MethodLocator.OS_MIUI, param.defaultClassLoader, param.applicationInfo)
+            engine.start()
+            earlyEngine = engine
+            XLog.i("early hook installed at package load, hooks=${engine.installedHooks}")
+        } catch (t: Throwable) {
+            XLog.e("early hook failed, fallback to package ready", t)
+        }
+    }
+
     override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
         XLog.attach(this)
         XLog.i(
@@ -24,6 +41,11 @@ class HookEntry : XposedModule() {
     }
 
     override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) {
+        val early = earlyEngine
+        if (early != null && early.installedHooks > 0) {
+            XLog.i("package ready: hooks already installed early")
+            return
+        }
         val packageName = param.packageName
         val osType = when (packageName) {
             MethodLocator.MIUI_PACKAGE -> MethodLocator.OS_MIUI

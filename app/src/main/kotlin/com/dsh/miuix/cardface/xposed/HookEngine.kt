@@ -41,6 +41,9 @@ class HookEngine(
     @Volatile
     private var installedCount = 0
 
+    /** 已安装的 hook 数量（供入口判断是否需要重试）。 */
+    val installedHooks: Int get() = installedCount
+
     @Volatile
     private var contextReady = false
 
