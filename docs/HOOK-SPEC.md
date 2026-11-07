@@ -9,11 +9,9 @@
 - Xposed 模块（新的 libxposed API 101，`io.github.libxposed:api:101.0.1`，compileOnly）。
 - `app/src/main/assets/META-INF/xposed/`：
   - `module.prop`: `minApiVersion=101` `targetApiVersion=101` `staticScope=true`
-  - `scope.list`: `com.miui.tsmclient`、`com.finshell.wallet`
   - `java_init.list`: `com.dsh.miuix.cardface.xposed.HookEntry`
 - 入口 `class HookEntry : XposedModule()`，在 `onPackageReady` 里按包名分派：
-  MIUI 卡包（com.miui.tsmclient）= OSType 0，ColorOS 卡包（com.finshell.wallet）= OSType 1。
-  其他包直接返回。
+  只处理 `com.miui.tsmclient`；其他包直接返回。
 
 ## 2. 设置读取 / 回写（RemotePreferences）
 
@@ -41,7 +39,6 @@
     返回 void、单 String 参数的方法（hook 时替换参数）。
   - MIUI #10（超级岛，仅 `super_land` 开）：包 `com.miui.tsmclient.util` 中，
     返回 String、参数为 `com.miui.tsmclient.entity.CardInfo` 的方法。
-  - ColorOS：类 `com.finshell.finui.widget.imageview.CircleNetworkImageView` 中，
     返回 void、单 String 参数的方法。
 - **兜底**（比原版更稳）：两条路径都实现，按优先级尝试：
   1. 用户配置的自定义 hook 点（设置项 class/method/method_arg + 两个开关）；

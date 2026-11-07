@@ -50,7 +50,6 @@
 ### 1.2 Manifest 其他事实
 
 - 权限：只有 `android.permission.INTERNET`（+ androidx 自用的 signature 级 `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`）。
-- `<queries>` 显式声明两个卡包包名：`com.miui.tsmclient`、`com.finshell.wallet`（Android 11+ 包可见性）。
 - `application`：`usesCleartextTraffic=true`、`allowBackup=true`、`extractNativeLibs=false`、`supportsRtl=true`、
   `android:description="@string/description"`。
 - 原生库只有 `lib/arm64-v8a/libdexkit.so`（**仅 arm64**，32 位设备/模拟器不可用）。
@@ -70,7 +69,6 @@
 | 文件 | 内容 |
 |---|---|
 | `module.prop` | `minApiVersion=101`、`targetApiVersion=101`、`staticScope=true` |
-| `scope.list` | `com.miui.tsmclient`、`com.finshell.wallet` |
 | `java_init.list` | `com.zhizi42.diymiuicard.Hook` |
 
 - 入口类 `com.zhizi42.diymiuicard.Hook extends io.github.libxposed.api.XposedModule`（`@qt` 注解登记）。
@@ -118,13 +116,9 @@
 | OSType | 包名 | 说明 |
 |---|---|---|
 | 0 | `com.miui.tsmclient` | 小米智能卡（MIUI/HyperOS） |
-| 1 | `com.finshell.wallet` | ColorOS 钱包 |
 | 2 | `com.meizu.mznfcpay` | 魅族钱包：**代码残留**，`onPackageReady` 不接受该包，UI 也检测不到 ⇒ 实际不可用 |
 
 - 检测函数 `gr.e(context)`：先 `getPackageInfo("com.miui.tsmclient", 128)` → 0；失败再
-  `getPackageInfo("com.finshell.wallet", 128)` → 1；都失败 → -1。
-  **✅ 字节码已核对：jadx 的默认源码把两层 try/catch 嵌套放错了，看上去 ColorOS 永远返回 -1；实际不等于 -1，ColorOS 分支有效。重新实现时不要照抄 jadx 的嵌套。**
-- 目标路径 `gr.v(OSType)`：0→`/data/data/com.miui.tsmclient/`、1→`/data/data/com.finshell.wallet/`、2→`/data/data/com.meizu.mznfcpay/`。
 
 ---
 
@@ -297,7 +291,6 @@ SwipeRefreshLayout
 | OSType | 目标目录 | 命令 |
 |---|---|---|
 | 0 | `/data/data/com.miui.tsmclient/files/images/` | `chmod 666 "<local>"` / `cp "<local>" "<dir>/"` / `chmod 666 "<dir>/<fileName>"` |
-| 1 | `/data/data/com.finshell.wallet/files/images/` | 同上 |
 | 2 | `/data/data/com.meizu.mznfcpay/files/images`（**少一个 `/`，bug**） | 同上 |
 | -1 | `null`（未装卡包） | `cp ... "null"` → 必然失败 |
 
@@ -344,7 +337,6 @@ SwipeRefreshLayout
 - item：160×101 缩略图（Glide `File` + 占位 `ic_image`）。
 - **点缩略图 = 建立映射**：`settings[url] = fileName`（文件名，不含路径），关闭对话框，刷新主列表。
 - **长按缩略图 = 删除**（无确认）：先 `root rm "<目标卡包>/files/images/<name>"`（✅ 路径**硬编码为 MIUI**，
-  ColorOS 上无效），再删本地文件；本地删除失败则返回 false（不刷新）。**不清理引用该文件的映射（悬空映射）。**
 - 「添加图片」按钮 → 同 §3.2 的首次 root 提示 → `SelectImageActivity`。
 
 ### 4.3 URL / 确认 / 清空 / 说明
@@ -455,9 +447,6 @@ SwipeRefreshLayout
     - `rm -rf /data/data/com.miui.tsmclient/files/zhizi42.diycard.method.1.txt`
     - 若**默认 prefs** 的 `super_land==true`：
       `rm -rf /data/data/com.miui.tsmclient/files/zhizi42.diycard.HyperSuperLand.method.txt`
-  - OSType 1：
-    - `am force-stop com.finshell.wallet`
-    - `rm -rf /data/data/com.finshell.wallet/files/zhizi42.diycard.method.txt`
   - OSType -1：命令列表为空，仍会执行一次 `su --mount-master`（可能误报成功）。
 - 成功 → Toast `clear_card_cache_succ`（复用“清除缓存成功”文案）；失败**无任何提示**。
 - 注意：super_land 判断读的是默认 prefs（`<pkg>_preferences`），不是远程 `settings`。✅
@@ -492,9 +481,8 @@ SwipeRefreshLayout
 
 ### 6.1 入口与目标
 
-- `onPackageReady(param)`：`packageName` 是 `com.finshell.wallet` → `OSType=1`；
-  是 `com.miui.tsmclient` → `OSType=0`；其它包 → 记错误日志并 return。
-- 只处理这两个包（scope.list 一致）。
+  只处理 `com.miui.tsmclient` → `OSType=0`；其它包 → 记错误日志并 return。
+- 只处理小米智能卡（scope.list 一致）。
 
 ### 6.2 初始化顺序（prepareHook）
 
@@ -507,7 +495,6 @@ SwipeRefreshLayout
 4. 若 `settings.class` 与 `settings.method` 都非空 → `prepareMethodToHook(class, method, method_arg, -1)`，**return**（不再 DexKit 定位）。
 5. 否则按 OSType 定位并 hook：
    - OSType 0：先方法 0，再方法 1；`super_land` 时再方法 10。
-   - OSType 1：只方法 0。
    - OSType 2（不可达）：`com.meizu.mznfcpay.model.BaseCardItem#largeIconUrl/smallIconUrl`。
 
 ### 6.3 方法定位（缓存 + DexKit）
@@ -526,7 +513,6 @@ SwipeRefreshLayout
   | 0 | MIUI | 包 `com.miui.tsmclient.util`，源文件 `CustomGlideUrl.java` 的类中，返回 String（从参数取 URL） | `String` | 参数 arg0 |
   | 1 | MIUI | 包 `com.bumptech.glide`，源文件 `RequestManager.java` 的类中，单 String 参数（把替换 URL 写回参数） | `String` | 参数 arg0 |
   | 10 | MIUI+super_land | 包 `com.miui.tsmclient.util`，返回 String、参数 `com.miui.tsmclient.entity.CardInfo` | `CardInfo` | 返回值 |
-  | 0 | ColorOS | 类 `com.finshell.finui.widget.imageview.CircleNetworkImageView` 中，单 String 参数（写回参数） | `String` | 参数 arg0 |
 
 ### 6.4 注入模式（Hook.MyHooker，✅ 语义已核对）
 
@@ -537,7 +523,6 @@ SwipeRefreshLayout
 | MIUI #0 | true | false | 读 arg0 → `replaceUrl` 非空则**直接 return 替换值**（跳过原方法） |
 | MIUI #1 | true | true | 读 arg0 → 非空则 `chain.proceed(new Object[]{替换值})` |
 | MIUI #10 | false | true | `chain.proceed()` 拿返回值 → 非空则 return 替换值 |
-| ColorOS #0 | true | true | 同 MIUI #1 |
 | 自定义 hook | 用户配置 | 用户配置 | 同上两种组合 |
 
 拦截逻辑伪代码：
@@ -620,7 +605,6 @@ String replaceUrl(String url) {
 | 资源名 | 原文 |
 |---|---|
 | `app_name` | DIY NFC卡面图片 |
-| `description` | 修改HyperOS和ColorOS卡包卡面图片 |
 | `text_enable` | LSPosed已启用 |
 | `text_disable` | 已禁用 |
 | `title_activity_settings` | 设置 |
@@ -637,9 +621,7 @@ String replaceUrl(String url) {
 | `card_url_title` | 卡片网址 |
 | `dialog_button_copy` | 复制 |
 | `how_to_use_title` | 使用说明 |
-| `how_to_use_msg` | 使用方法： 1.启用模块\n2.打开设置里的卡包找到要更换的卡，保证看到需要更换的图像\n（ColorOS在看到图片时请确认模块在后台，否则可能添加失败）\n3.回到应用下拉刷新\n4.出现目标图像后点击箭头右边的图像，点击中间的添加图片按钮以添加图片，或者选择已有的图片\n5.重新打开卡包，此时图像应已经变化\ntips：主界面往左划不需要更改的图片可以添加至黑名单 |
 | `no_card_app_installed_title` | 未找到适配的卡包APP |
-| `no_card_app_installed_content` | 未检测到您的系统安装了小米智能卡或ColorOS卡包，请检查是否存在目标应用或已给予权限 |
 | （代码） | 请添加卡包APP到作用域 |
 | （代码） | 模块作用域没有卡包APP，请点击确定后，同意添加卡包APP到本模块作用域。 |
 | （代码） | xposed service not exist |
@@ -709,7 +691,6 @@ String replaceUrl(String url) {
 | （header_preferences 硬编码） | developer option |
 | （custom_hook_preferences） | Class name / Method name / Method arg class name / load url from arg / replace url to arg |
 | `settings_title_about` | 关于 |
-| `settings_about_msg` | DIY NFC Card v%s，code by AI丿质子\n感谢2255提供ColorOS测试机（%s 固定 "2.4"） |
 | `settings_title_FAQ` | 常见问题 |
 | `settings_FAQ_msg` | 常见问题：\n模块主界面没有图片：请确认LSP里模块已启用并勾选作用域，强行停止卡包，在卡包里加载完图片\n替换了图片但不生效：如上若仍不生效请确认/data/data/卡包包名/files/images下存在选择的图片文件\n更改了替换图片但仍显示旧图片：设置里清除卡面图片缓存\n更新模块后：请强行停止卡包后再重启卡包和应用\n若确认模块是最新版，已重启卡包和应用仍有故障：请加群反馈 |
 | `settings_title_join_qq` | 加入作者的QQ群 |
@@ -854,7 +835,6 @@ return out;
 - [ ] A04 Manifest 声明两个卡包包名的 `<queries>`
 - [ ] A05 Xposed `module.prop`（api 101、staticScope）与 scope 列表正确
 - [ ] A06 `java_init.list` 指向模块入口类
-- [ ] A07 入口只处理 MIUI / ColorOS 两个包，其它包不崩溃
 - [ ] A08 原生库按设备架构可用（或提供非 DexKit 兜底）
 - [ ] A09 权限最小化（不申请存储/root 权限）
 - [ ] A10 应用数据目录结构（图库/缓存/映射）明确且有迁移策略
@@ -939,7 +919,6 @@ return out;
 
 ### F. Hook / 替换（F01–F16）
 
-- [ ] F01 Hook 只在 MIUI/ColorOS 卡包进程生效
 - [ ] F02 读取远程 prefs（authority/prefs 名/类型/编码）兼容原协议
 - [ ] F03 捕获 Application context 后能写回 URL 集合
 - [ ] F04 目标方法定位：先缓存、再 DexKit，唯一命中

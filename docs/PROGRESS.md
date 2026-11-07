@@ -50,7 +50,7 @@
 - 对比图：`docs/imaging/compare-crop.png`、`compare-lineart.png`。
 
 ### Xposed 模块（复现原版功能）
-- libxposed API 101，`META-INF/xposed/*` 打包在 APK 根；作用域 com.miui.tsmclient / com.finshell.wallet。
+- libxposed API 101，`META-INF/xposed/*` 打包在 APK 根；作用域 com.miui.tsmclient。
 - DexKit 定位 + 缓存文件 + 自定义 hook 点 + 反射兜底；arg/返回值两种替换模式；
   小图过滤、黑名单、测试模式、last_hook_at 上报。
 - 替换图优先复制到卡包私有目录并返回 `file://`（复制需要 root）；
@@ -75,7 +75,7 @@
 
 ## 待用户配合 / 下一步
 
-1. 在 LSPosed 管理器里启用「卡面工坊」，勾选作用域（小米智能卡 / ColorOS 卡包）。
+1. 在 LSPosed 管理器里启用「卡面工坊」，勾选作用域（小米智能卡）。
 2. 强行停止小米智能卡，再打开它浏览一遍卡面；回到 App 下拉刷新，应看到卡面列表。
 3. 若替换不生效：设置 → 清除 hook 点缓存 → 重启卡包；仍不行看 logcat `cardface` 日志。
 4. 若卡包进程读不到 Provider（包可见性），再上 `io.github.libxposed:service` 方案（见 docs/HOOK-SPEC.md）。
@@ -190,7 +190,7 @@
 
 - 去掉应用内所有「免 root / 不需要 root」的宣称（关于页、引导页、常见问题、设置项摘要），改为说明：
   替换图会复制到卡包私有目录并用 `file://` 加载，复制步骤需要 root；无 root 时退回 `content://` 兜底。
-- 关于页新增「兼容性与免责声明」：ColorOS 卡包未做真机验证、小米智能卡验证环境、其他风险与使用限制。
+- 关于页新增「兼容性与免责声明」：小米智能卡验证环境、其他风险与使用限制。
 
 
 ## 20:05 新图标（HyperDay 风格）

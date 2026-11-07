@@ -5,7 +5,7 @@
 <h1 align="center">卡面工坊</h1>
 
 <p align="center">
-  把小米智能卡 / ColorOS 卡包里千篇一律的卡面，换成你自己喜欢的图片<br/>
+  把小米智能卡里千篇一律的卡面，换成你自己喜欢的图片<br/>
   <sub>LSPosed 模块 · Miuix（HyperOS）界面 · Lanczos3 图像管线</sub>
 </p>
 
@@ -55,13 +55,13 @@
 
 - Android 8.0+（minSdk 26，targetSdk 36）
 - 已 root，并安装 **LSPosed**（libxposed API 101+）
-- 卡包：小米智能卡（`com.miui.tsmclient`）已验证；ColorOS 卡包（`com.finshell.wallet`）未做真机验证，见下方免责声明
+- 卡包：小米智能卡（`com.miui.tsmclient`）
 - 参考验证环境：Xiaomi 15 Pro / HyperOS 4 / LSPosed 2.2.1 + 小米智能卡
 
 ## 安装与使用
 
 1. 安装 Release 里的 `CardFace-v1.0.0.apk`。
-2. 在 LSPosed 里启用「卡面工坊」，作用域勾选：小米智能卡 / ColorOS 卡包。
+2. 在 LSPosed 里启用「卡面工坊」，作用域勾选：小米智能卡。
 3. 打开卡包，把卡面浏览一遍（让 hook 记录到卡面地址）。
 4. 回到「卡面工坊」→ 点一张卡面 → 从相册选图 / 从图库选 → 裁剪 / 加标志 → 保存并应用。
 5. 重启卡包（保存成功后可一键重启），卡面即生效。
@@ -96,7 +96,6 @@ docs/      规格、进度记录、截图
 
 ## 免责声明与兼容性
 
-- **ColorOS 卡包**：未做真机验证，仅按通用包名 / 加载逻辑兼容，可能识别不到卡面、替换不生效或显示异常，请自行评估风险。
 - **小米智能卡**：在上述参考环境验证通过，其他机型 / 系统 / 卡包版本可能存在差异。
 - 替换图片需要把图复制进卡包私有目录（`file://`），**复制步骤需要 root**；没有 root 时会退回 `content://`，
   但部分卡包版本不认。
