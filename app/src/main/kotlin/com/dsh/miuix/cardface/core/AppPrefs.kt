@@ -228,6 +228,21 @@ class AppPrefs(context: Context) {
     }
 
     /** settings 里所有「图库文件名」型映射值（排除 http 地址与空值），用于同步到卡包目录。 */
+    /** 所有 URL -> 替换值（文件名 / http 地址）的映射，用于给 hook 进程写本地快照。 */
+    fun mappingPairs(): Map<String, String> {
+        val reserved = setOf(
+            KEY_HIDE_ICON, KEY_SHOW_ALL_CARDS, KEY_SUPER_LAND, KEY_TEST_MODE,
+            KEY_DEBUG, KEY_DEV_MODE, KEY_FIRST_RUN, "class", "method", "method_arg",
+            "load_url_from_arg", "replace_url_to_arg",
+        )
+        val out = LinkedHashMap<String, String>()
+        settings.all.forEach { (key, value) ->
+            if (key in reserved) return@forEach
+            if (value is String && value.isNotEmpty()) out[key] = value
+        }
+        return out
+    }
+
     fun mappedImageNames(): List<String> = settings.all.values
         .filterIsInstance<String>()
         .filter { it.isNotBlank() && !it.startsWith("http://") && !it.startsWith("https://") }
