@@ -10,11 +10,12 @@ plugins {
 android {
     namespace = "com.dsh.miuix.cardface"
     compileSdk = 37
+    compileSdkMinor = 2
     buildToolsVersion = "37.0.0"
 
     defaultConfig {
         applicationId = "io.github.miambao.cardface"
-        minSdk = 26
+        minSdk = 33
         targetSdk = 36
         versionCode = 21
         versionName = "2.0.1"
@@ -63,9 +64,11 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.12.4")
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.exifinterface:exifinterface:1.4.2")
-    implementation("top.yukonga.miuix.kmp:miuix-ui:0.9.4")
-    implementation("top.yukonga.miuix.kmp:miuix-icons:0.9.4")
-    implementation("top.yukonga.miuix.kmp:miuix-preference:0.9.4")
+    implementation("top.yukonga.miuix.kmp:miuix-ui:0.9.5-beta01")
+    implementation("top.yukonga.miuix.kmp:miuix-icons:0.9.5-beta01")
+    implementation("top.yukonga.miuix.kmp:miuix-preference:0.9.5-beta01")
+    implementation("top.yukonga.miuix.kmp:miuix-glass:0.9.5-beta01")
+    implementation("top.yukonga.miuix.kmp:miuix-glass-icons:0.9.5-beta01")
     implementation("io.coil-kt.coil3:coil-compose:3.6.3")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")

@@ -73,8 +73,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import top.yukonga.miuix.kmp.basic.FloatingNavigationBar
+import top.yukonga.miuix.kmp.blur.layerBackdrop
+import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
+import top.yukonga.miuix.kmp.glass.GlassNavigationBar
+import top.yukonga.miuix.kmp.glass.GlassNavigationItem
 import top.yukonga.miuix.kmp.basic.Icon
-import top.yukonga.miuix.kmp.basic.FloatingNavigationBar
 import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SmallTopAppBar
@@ -135,6 +138,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val nav = rememberSaveable(saver = NavState.Saver) { NavState() }
+    val glassBackdrop = rememberLayerBackdrop()
     var pendingGallerySave by remember { mutableStateOf<Bitmap?>(null) }
     var pendingGalleryName by remember { mutableStateOf("") }
     val route = nav.current
@@ -182,26 +186,34 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
         },
         bottomBar = {
             if (currentPage.isTab && !model.galleryPreviewVisible && !model.posterPreviewVisible) {
-                FloatingNavigationBar() {
-                    FloatingTabItem(
-                        selected = currentPage == Page.Home,
-                        onClick = { nav.resetTo(Page.Home) },
-                        icon = MiuixIcons.Home,
-                        label = "卡面",
-                    )
-                    FloatingTabItem(
-                        selected = currentPage == Page.Gallery,
-                        onClick = { nav.resetTo(Page.Gallery) },
-                        icon = MiuixIcons.Photos,
-                        label = "图库",
-                    )
-                    FloatingTabItem(
-                        selected = currentPage == Page.Settings,
-                        onClick = { nav.resetTo(Page.Settings) },
-                        icon = MiuixIcons.Settings,
-                        label = "设置",
-                    )
+                val tabs = listOf(
+                    GlassNavigationItem(MiuixIcons.Home, "卡面", "卡面"),
+                    GlassNavigationItem(MiuixIcons.Photos, "图库", "图库"),
+                    GlassNavigationItem(MiuixIcons.Settings, "设置", "设置"),
+                )
+                val selected = when (currentPage) {
+                    Page.Home -> 0
+                    Page.Gallery -> 1
+                    else -> 2
                 }
+                GlassNavigationBar(
+                    items = tabs,
+                    selectedIndex = selected,
+                    onSelect = { index ->
+                        nav.resetTo(
+                            when (index) {
+                                0 -> Page.Home
+                                1 -> Page.Gallery
+                                else -> Page.Settings
+                            },
+                        )
+                    },
+                    backdrop = glassBackdrop,
+                    defaultWindowInsetsPadding = false,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                )
             }
         },
         snackbarHost = {
@@ -216,7 +228,9 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
     ) { innerPadding ->
         AnimatedContent(
             targetState = route,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .layerBackdrop(glassBackdrop),
             transitionSpec = {
                 if (!animationsEnabled) {
                     EnterTransition.None togetherWith ExitTransition.None
