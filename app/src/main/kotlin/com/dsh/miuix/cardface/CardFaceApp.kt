@@ -267,6 +267,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                         nav.push(Route(Page.Editor, url))
                     },
                     onOpenFaq = { nav.push(Route(Page.Faq)) },
+                    onOpenGuide = { nav.push(Route(Page.Guide)) },
                 )
 
                 Page.Gallery -> GalleryScreen(

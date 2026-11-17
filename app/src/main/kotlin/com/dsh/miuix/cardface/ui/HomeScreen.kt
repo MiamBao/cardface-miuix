@@ -99,6 +99,7 @@ fun HomeScreen(
     innerPadding: PaddingValues,
     onOpenEditor: (String) -> Unit,
     onOpenFaq: () -> Unit,
+    onOpenGuide: () -> Unit,
 ) {
     val context = LocalContext.current
     val prefs = model.prefs
@@ -182,7 +183,7 @@ fun HomeScreen(
                     faceCount = faces.size,
                     replacedCount = replacedCount,
                     demoMode = demoMode,
-                    onActivate = onOpenFaq,
+                    onActivate = onOpenGuide,
                 )
             }
 

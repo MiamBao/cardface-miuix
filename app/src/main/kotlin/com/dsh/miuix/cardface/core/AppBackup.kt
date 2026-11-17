@@ -36,6 +36,13 @@ object AppBackup {
                 img.inputStream().use { it.copyTo(zip) }
                 zip.closeEntry()
             }
+            // 映射实际指向 applied/（应用后的合成图），以前漏掉了这个目录。
+            val applied = File(context.filesDir, "applied")
+            applied.listFiles()?.filter { it.isFile }?.forEach { img ->
+                zip.putNextEntry(ZipEntry("applied/${img.name}"))
+                img.inputStream().use { it.copyTo(zip) }
+                zip.closeEntry()
+            }
         }
         return out
     }
@@ -69,11 +76,16 @@ object AppBackup {
                 prefs.restoreNames(names)
             }
             val imagesDir = File(context.filesDir, "images").apply { mkdirs() }
-            zip.entries().asSequence().filter { it.name.startsWith("images/") && !it.isDirectory }.forEach { e ->
-                val name = e.name.removePrefix("images/")
+            val appliedDir = File(context.filesDir, "applied").apply { mkdirs() }
+            zip.entries().asSequence().filter {
+                (it.name.startsWith("images/") || it.name.startsWith("applied/")) && !it.isDirectory
+            }.forEach { e ->
+                val isApplied = e.name.startsWith("applied/")
+                val name = e.name.removePrefix(if (isApplied) "applied/" else "images/")
                 if (name.isNotEmpty() && !name.contains('/')) {
+                    val target = File(if (isApplied) appliedDir else imagesDir, name)
                     zip.getInputStream(e).use { input ->
-                        FileOutputStream(File(imagesDir, name)).use { out -> input.copyTo(out) }
+                        FileOutputStream(target).use { out -> input.copyTo(out) }
                     }
                     images++
                 }
