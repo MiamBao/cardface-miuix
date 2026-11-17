@@ -183,8 +183,9 @@ class AppPrefs(context: Context) {
         touch()
     }
 
-    /** 备份恢复：整体写入设置（保留设备相关键）。 */
+    /** 备份恢复：整体写入设置，但保留设备运行状态（避免恢复后显示未启用）。 */
     fun restoreSettings(values: Map<String, Any?>) {
+        val preserved = rawSettings.all.filterKeys { it in PRESERVED_ON_RESTORE }
         val e = rawSettings.edit().clear()
         values.forEach { (k, v) ->
             when (v) {
@@ -192,6 +193,15 @@ class AppPrefs(context: Context) {
                 is String -> e.putString(k, v)
                 is Int -> e.putInt(k, v)
                 is Long -> e.putLong(k, v)
+            }
+        }
+        preserved.forEach { (k, v) ->
+            when (v) {
+                is Boolean -> e.putBoolean(k, v)
+                is String -> e.putString(k, v)
+                is Int -> e.putInt(k, v)
+                is Long -> e.putLong(k, v)
+                is Float -> e.putFloat(k, v)
             }
         }
         e.apply()
@@ -406,6 +416,10 @@ class AppPrefs(context: Context) {
         const val KEY_KEY_COLOR = "key_color"
         const val KEY_DARK_MODE = "dark_mode"
         const val KEY_ANIMATIONS = "animations"
+        val PRESERVED_ON_RESTORE = setOf(
+            "last_hook_at", "hook_target_version", "first_run", "dev_mode_open",
+            "hidden_promo_bank_faces_v1", "data_saver_prompt_v1",
+        )
         val DEFAULT_KEY_COLOR = 0xFF3482FF.toInt()
     }
 }

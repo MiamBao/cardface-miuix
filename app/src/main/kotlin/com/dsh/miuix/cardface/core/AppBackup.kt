@@ -90,6 +90,18 @@ object AppBackup {
                     images++
                 }
             }
+            // 兼容旧备份：旧版只打包了 images/，但映射可能指向 applied/。
+            // 卡包里通常还留着已应用的副本，缺图时从卡包私有目录补回来。
+            val wallet = WalletApps.primary(context)
+            if (wallet != null) {
+                val walletImages = "/data/data/${wallet.packageName}/files/images"
+                prefs.mappedImageNames().forEach { name ->
+                    if (File(imagesDir, name).exists() || File(appliedDir, name).exists()) return@forEach
+                    if (RootShell.copyIntoDir("$walletImages/$name", appliedDir.absolutePath, name, "644").ok) {
+                        images++
+                    }
+                }
+            }
         }
         // 文件已经全部写回，再触发一次界面重读；避免首页先拿到旧图/空文件。
         prefs.bumpRevision()
