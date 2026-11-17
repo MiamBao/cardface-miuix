@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TextButton
@@ -196,24 +198,30 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                     Page.Gallery -> 1
                     else -> 2
                 }
-                GlassNavigationBar(
-                    items = tabs,
-                    selectedIndex = selected,
-                    onSelect = { index ->
-                        nav.resetTo(
-                            when (index) {
-                                0 -> Page.Home
-                                1 -> Page.Gallery
-                                else -> Page.Settings
-                            },
-                        )
-                    },
-                    backdrop = glassBackdrop,
-                    defaultWindowInsetsPadding = false,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = androidx.compose.ui.Alignment.Center,
+                ) {
+                    GlassNavigationBar(
+                        items = tabs,
+                        selectedIndex = selected,
+                        onSelect = { index ->
+                            nav.resetTo(
+                                when (index) {
+                                    0 -> Page.Home
+                                    1 -> Page.Gallery
+                                    else -> Page.Settings
+                                },
+                            )
+                        },
+                        backdrop = glassBackdrop,
+                        defaultWindowInsetsPadding = true,
+                        modifier = Modifier
+                            .widthIn(max = 330.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                    )
+                }
             }
         },
         snackbarHost = {
