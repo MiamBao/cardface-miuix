@@ -136,17 +136,25 @@ fun SettingsScreen(
         if (uri == null) return@rememberLauncherForActivityResult
         confirm = ConfirmSpec(
             title = "恢复这份备份？",
-            message = "会覆盖当前设置、映射和图库替换图，恢复后建议重启卡包。",
+            message = "会覆盖当前设置、映射和图库替换图，恢复后会自动重启卡包。",
             confirmText = "恢复",
             onConfirm = {
                 scope.launch {
                     val result = withContext(Dispatchers.IO) {
                         runCatching { com.dsh.miuix.cardface.core.AppBackup.restore(context, uri, prefs) }
                     }
-                    result.onSuccess {
+                    result.onSuccess { restored ->
                         model.prefs.bumpRevision()
                         model.bumpStore()
-                        toast("已恢复：${it.mappings} 条映射，${it.images} 张图")
+                        scope.launch {
+                            val restarted = withContext(Dispatchers.IO) {
+                                DeviceBridge.restartWallet(context, walletKind)
+                            }
+                            toast(
+                                "已恢复：${restored.mappings} 条映射，${restored.images} 张图" +
+                                    if (restarted) "，卡包已重启" else "，请手动重启卡包",
+                            )
+                        }
                     }.onFailure { toast("恢复失败：${it.message ?: "文件不可用"}") }
                 }
             },
