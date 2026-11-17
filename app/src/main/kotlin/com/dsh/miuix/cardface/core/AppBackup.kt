@@ -30,19 +30,20 @@ object AppBackup {
                     zip.closeEntry()
                 }
             }
-            val images = File(context.filesDir, "images")
-            images.listFiles()?.filter { it.isFile }?.forEach { img ->
-                zip.putNextEntry(ZipEntry("images/${img.name}"))
-                img.inputStream().use { it.copyTo(zip) }
-                zip.closeEntry()
+            fun addDir(dir: File, prefix: String) {
+                dir.listFiles()?.filter { it.isFile }?.forEach { img ->
+                    // 重装后 UID 变化或文件损坏时跳过，别让一张图拖垮整个备份。
+                    if (!img.canRead()) return@forEach
+                    runCatching {
+                        zip.putNextEntry(ZipEntry("$prefix/${img.name}"))
+                        img.inputStream().use { it.copyTo(zip) }
+                        zip.closeEntry()
+                    }
+                }
             }
+            addDir(File(context.filesDir, "images"), "images")
             // 映射实际指向 applied/（应用后的合成图），以前漏掉了这个目录。
-            val applied = File(context.filesDir, "applied")
-            applied.listFiles()?.filter { it.isFile }?.forEach { img ->
-                zip.putNextEntry(ZipEntry("applied/${img.name}"))
-                img.inputStream().use { it.copyTo(zip) }
-                zip.closeEntry()
-            }
+            addDir(File(context.filesDir, "applied"), "applied")
         }
         return out
     }
