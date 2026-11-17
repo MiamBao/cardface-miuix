@@ -214,7 +214,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                                 },
                             )
                         },
-                        backdrop = glassBackdrop,
+                        backdrop = null,
                         defaultWindowInsetsPadding = true,
                         modifier = Modifier
                             .widthIn(max = 330.dp)
