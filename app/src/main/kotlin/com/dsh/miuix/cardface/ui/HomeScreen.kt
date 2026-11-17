@@ -85,6 +85,7 @@ import top.yukonga.miuix.kmp.icon.extended.Rename
 import top.yukonga.miuix.kmp.icon.extended.ChevronForward
 import top.yukonga.miuix.kmp.icon.extended.Copy
 import top.yukonga.miuix.kmp.icon.extended.Info
+import top.yukonga.miuix.kmp.icon.extended.Help
 import top.yukonga.miuix.kmp.icon.extended.Refresh
 import top.yukonga.miuix.kmp.overlay.OverlayBottomSheet
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -97,7 +98,7 @@ fun HomeScreen(
     model: AppModel,
     innerPadding: PaddingValues,
     onOpenEditor: (String) -> Unit,
-    onOpenGuide: () -> Unit,
+    onOpenFaq: () -> Unit,
 ) {
     val context = LocalContext.current
     val prefs = model.prefs
@@ -158,6 +159,13 @@ fun HomeScreen(
                     title = "卡面工坊",
                     contentPadding = PaddingValues(start = 4.dp, end = 2.dp, top = 14.dp, bottom = 10.dp),
                 ) {
+                    IconButton(onClick = onOpenFaq) {
+                        Icon(
+                            imageVector = MiuixIcons.Help,
+                            contentDescription = "常见问题",
+                            tint = MiuixTheme.colorScheme.onBackground,
+                        )
+                    }
                     IconButton(onClick = { isRefreshing = true }) {
                         Icon(
                             imageVector = MiuixIcons.Refresh,
@@ -174,7 +182,7 @@ fun HomeScreen(
                     faceCount = faces.size,
                     replacedCount = replacedCount,
                     demoMode = demoMode,
-                    onActivate = onOpenGuide,
+                    onActivate = onOpenFaq,
                 )
             }
 
@@ -205,7 +213,7 @@ fun HomeScreen(
                                 }
                             }
                         },
-                        onOpenGuide = onOpenGuide,
+                        onOpenFaq = onOpenFaq,
                     )
                 }
             } else {
@@ -521,7 +529,7 @@ private fun EmptyHomeCard(
     onRefresh: () -> Unit,
     onOpenWallet: () -> Unit,
     onLoadDemo: () -> Unit,
-    onOpenGuide: () -> Unit,
+    onOpenFaq: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -601,8 +609,8 @@ private fun EmptyHomeCard(
         )
         Spacer(Modifier.height(4.dp))
         TextButton(
-            text = "查看使用说明",
-            onClick = onOpenGuide,
+            text = "查看常见问题",
+            onClick = onOpenFaq,
             modifier = Modifier.fillMaxWidth(),
         )
     }

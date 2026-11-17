@@ -133,10 +133,10 @@ class AppPrefs(context: Context) {
         get() = settings.getInt(KEY_DARK_MODE, 0)
         set(v) = settings.edit().putInt(KEY_DARK_MODE, v).apply().also { touch(); appearanceRevision++ }
 
-    /** 页面/列表过渡动画开关（默认开）。 */
+    /** 过渡动画固定开启（设置里的开关已移除，保留字段兼容旧版本数据）。 */
     var animations: Boolean
-        get() = settings.getBoolean(KEY_ANIMATIONS, true)
-        set(v) = settings.edit().putBoolean(KEY_ANIMATIONS, v).apply().also { touch(); appearanceRevision++ }
+        get() = true
+        set(_) = Unit
 
     /** 兼容模式：把图片 root 复制到卡包私有目录并返回 file://（默认关，走 content:// 无需 root）。 */
     var compatCopy: Boolean

@@ -55,7 +55,7 @@ import top.yukonga.miuix.kmp.icon.extended.Blocklist
 import top.yukonga.miuix.kmp.icon.extended.Help
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
-// ---------------- 使用说明 ----------------
+// ---------------- 新手引导 ----------------
 
 @Composable
 fun GuideScreen(
@@ -79,7 +79,32 @@ fun GuideScreen(
         ),
     ) {
         item(key = "header") {
-            BackHeader(title = "使用说明", onBack = onBack)
+            BackHeader(title = "新手引导", onBack = onBack)
+        }
+        item(key = "root_notice") {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .background(
+                        MiuixTheme.colorScheme.error.copy(alpha = 0.10f),
+                        RoundedCornerShape(18.dp),
+                    )
+                    .padding(16.dp),
+            ) {
+                Text(
+                    text = "使用前须知：需要 root + LSPosed",
+                    style = MiuixTheme.textStyles.headline2,
+                    fontWeight = FontWeight.Bold,
+                    color = MiuixTheme.colorScheme.error,
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = "本模块只支持小米智能卡。替换图需要写入卡包私有目录，没有 root 无法完成替换；没有 root 的设备请不要继续安装。",
+                    style = MiuixTheme.textStyles.footnote1,
+                    color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                )
+            }
         }
         item(key = "intro") {
             Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)) {
@@ -202,6 +227,31 @@ fun FaqScreen(innerPadding: PaddingValues, onBack: () -> Unit) {
         item(key = "header") {
             BackHeader(title = "常见问题", onBack = onBack)
         }
+        item(key = "faq_warning") {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .background(
+                        MiuixTheme.colorScheme.error.copy(alpha = 0.10f),
+                        RoundedCornerShape(18.dp),
+                    )
+                    .padding(16.dp),
+            ) {
+                Text(
+                    text = "重要：需要 root + LSPosed",
+                    style = MiuixTheme.textStyles.headline2,
+                    fontWeight = FontWeight.Bold,
+                    color = MiuixTheme.colorScheme.error,
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = "没有 root 无法把替换图写进卡包；只支持小米智能卡，作用域也只勾它。",
+                    style = MiuixTheme.textStyles.footnote1,
+                    color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                )
+            }
+        }
         items(count = FAQ_ITEMS.size, key = { "faq_$it" }) { index ->
             val (question, answer) = FAQ_ITEMS[index]
             Card(
@@ -222,7 +272,7 @@ fun FaqScreen(innerPadding: PaddingValues, onBack: () -> Unit) {
                         text = question,
                         style = MiuixTheme.textStyles.body1,
                         fontWeight = FontWeight.Medium,
-                        color = MiuixTheme.colorScheme.onSurface,
+                        color = if (index == 0) MiuixTheme.colorScheme.error else MiuixTheme.colorScheme.onSurface,
                     )
                 }
                 Spacer(Modifier.height(6.dp))
@@ -243,8 +293,6 @@ fun AboutScreen(
     model: AppModel,
     innerPadding: PaddingValues,
     onBack: () -> Unit,
-    onOpenGuide: () -> Unit = {},
-    onOpenFaq: () -> Unit = {},
     onOpenChangelog: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -393,27 +441,6 @@ fun AboutScreen(
                             prefs.autoCheckUpdate = it
                         },
                     )
-                }
-            }
-        }
-
-        // 帮助与反馈
-        item(key = "help") {
-            Column {
-                SmallTitle(text = "帮助与反馈")
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    cornerRadius = 20.dp,
-                    insideMargin = PaddingValues(0.dp),
-                ) {
-                    ArrowPreference(title = "使用说明", summary = "从启用模块到换卡面的完整步骤", onClick = onOpenGuide)
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        color = MiuixTheme.colorScheme.dividerLine,
-                    )
-                    ArrowPreference(title = "常见问题", summary = "不生效、卡面不刷新、权限问题", onClick = onOpenFaq)
                 }
             }
         }

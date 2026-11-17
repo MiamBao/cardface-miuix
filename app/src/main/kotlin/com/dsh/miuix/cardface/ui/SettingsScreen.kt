@@ -94,8 +94,6 @@ fun SettingsScreen(
     model: AppModel,
     innerPadding: PaddingValues,
     onOpenBlacklist: () -> Unit,
-    onOpenGuide: () -> Unit,
-    onOpenFaq: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenVersion: () -> Unit,
 ) {
@@ -343,14 +341,7 @@ fun SettingsScreen(
                     },
                     onClick = { showDarkDialog = true },
                 )
-                RowDivider()
-                SwitchPreference(
-                    title = "界面过渡动画",
-                    startAction = { SettingRowIcon(MiuixIcons.Play) },
-                    summary = "关闭后页面切换、列表动画立即失效",
-                    checked = prefs.animations,
-                    onCheckedChange = { prefs.animations = it },
-                )
+
                 RowDivider()
                 ArrowPreference(
                     title = "恢复默认外观",
@@ -360,7 +351,6 @@ fun SettingsScreen(
                         prefs.dynamicColor = false
                         prefs.keyColorArgb = AppPrefs.DEFAULT_KEY_COLOR
                         prefs.darkMode = 0
-                        prefs.animations = true
                         toast("已恢复默认外观")
                     },
                 )
@@ -513,10 +503,6 @@ fun SettingsScreen(
                     summary = "内部 ${com.dsh.miuix.cardface.core.BuildInfo.INTERNAL_VERSION} · 检查更新 / 更新公告",
                     onClick = onOpenVersion,
                 )
-                RowDivider()
-                ArrowPreference(title = "使用说明", onClick = onOpenGuide)
-                RowDivider()
-                ArrowPreference(title = "常见问题", onClick = onOpenFaq)
                 RowDivider()
                 ArrowPreference(
                     title = "关于应用",

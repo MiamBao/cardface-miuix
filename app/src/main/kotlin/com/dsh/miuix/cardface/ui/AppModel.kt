@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.SnackbarDuration
 import top.yukonga.miuix.kmp.basic.SnackbarHostState
 
-/** 全局动画开关（设置页「界面过渡动画」）；关闭后所有过渡立即失效。 */
+/** 全局过渡动画；设置开关已移除，固定开启。 */
 val LocalAnimationsEnabled = staticCompositionLocalOf { true }
 
 /** 全部页面路由（单 Activity + Compose 状态导航，不用 navigation 库）。 */
@@ -27,7 +27,7 @@ enum class Page(val route: String, val title: String) {
     Settings("settings", "设置"),
     Editor("editor", "自定义卡面"),
     Crop("crop", "裁剪卡面"),
-    Guide("guide", "使用说明"),
+    Guide("guide", "新手引导"),
     Faq("faq", "常见问题"),
     About("about", "关于与捐赠"),
     Version("version", "版本与更新"),

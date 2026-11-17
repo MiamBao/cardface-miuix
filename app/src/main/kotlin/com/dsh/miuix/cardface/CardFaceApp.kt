@@ -266,7 +266,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                         model.openEditor(url)
                         nav.push(Route(Page.Editor, url))
                     },
-                    onOpenGuide = { nav.push(Route(Page.Guide)) },
+                    onOpenFaq = { nav.push(Route(Page.Faq)) },
                 )
 
                 Page.Gallery -> GalleryScreen(
@@ -286,8 +286,6 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                     model = model,
                     innerPadding = innerPadding,
                     onOpenBlacklist = { nav.push(Route(Page.Blacklist)) },
-                    onOpenGuide = { nav.push(Route(Page.Guide)) },
-                    onOpenFaq = { nav.push(Route(Page.Faq)) },
                     onOpenAbout = { nav.push(Route(Page.About)) },
                     onOpenVersion = { nav.push(Route(Page.Version)) },
                 )
@@ -400,8 +398,6 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                     model = model,
                     innerPadding = innerPadding,
                     onBack = { nav.pop() },
-                    onOpenGuide = { nav.push(Route(Page.Guide)) },
-                    onOpenFaq = { nav.push(Route(Page.Faq)) },
                     onOpenChangelog = { nav.push(Route(Page.Changelog)) },
                 )
 
