@@ -42,8 +42,8 @@ object AppBackup {
 
     data class RestoreResult(val mappings: Int, val images: Int)
 
-    /** 恢复备份；失败抛异常由调用方提示。 */
-    fun restore(context: Context, uri: Uri): RestoreResult {
+    /** 恢复备份；失败抛异常由调用方提示。传入当前 AppPrefs，恢复后让界面立刻重读。 */
+    fun restore(context: Context, uri: Uri, prefs: AppPrefs = AppPrefs(context)): RestoreResult {
         val tmp = File(context.cacheDir, "restore.zip")
         context.contentResolver.openInputStream(uri)?.use { input ->
             FileOutputStream(tmp).use { out -> input.copyTo(out) }
@@ -55,7 +55,6 @@ object AppBackup {
             val urlsXml = zip.getEntry("prefs/card_urls.xml")?.let { read(zip, it) }
             val namesXml = zip.getEntry("prefs/card_names.xml")?.let { read(zip, it) }
             if (settingsXml == null && urlsXml == null) error("备份内容不完整")
-            val prefs = AppPrefs(context)
             if (settingsXml != null) {
                 val values = parseMap(settingsXml)
                 prefs.restoreSettings(values.filterKeys { it !in EPHEMERAL })
@@ -80,7 +79,9 @@ object AppBackup {
                 }
             }
         }
-        CardSync.writeMapSnapshot(context, AppPrefs(context))
+        // 文件已经全部写回，再触发一次界面重读；避免首页先拿到旧图/空文件。
+        prefs.bumpRevision()
+        CardSync.writeMapSnapshot(context, prefs)
         tmp.delete()
         return RestoreResult(mappings, images)
     }

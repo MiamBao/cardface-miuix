@@ -141,9 +141,10 @@ fun SettingsScreen(
             onConfirm = {
                 scope.launch {
                     val result = withContext(Dispatchers.IO) {
-                        runCatching { com.dsh.miuix.cardface.core.AppBackup.restore(context, uri) }
+                        runCatching { com.dsh.miuix.cardface.core.AppBackup.restore(context, uri, prefs) }
                     }
                     result.onSuccess {
+                        model.prefs.bumpRevision()
                         model.bumpStore()
                         toast("已恢复：${it.mappings} 条映射，${it.images} 张图")
                     }.onFailure { toast("恢复失败：${it.message ?: "文件不可用"}") }
