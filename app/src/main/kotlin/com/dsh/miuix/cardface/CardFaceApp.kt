@@ -253,10 +253,26 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
         },
         containerColor = MiuixTheme.colorScheme.surface,
     ) { innerPadding ->
-        if (currentPage.isTab) {
+        AnimatedContent(
+            targetState = currentPage.isTab,
+            modifier = Modifier.fillMaxSize().layerBackdrop(glassBackdrop),
+            transitionSpec = {
+                if (!animationsEnabled) {
+                    EnterTransition.None togetherWith ExitTransition.None
+                } else if (targetState) {
+                    (slideInHorizontally(tween(260)) { -it / 3 } + fadeIn(tween(180))) togetherWith
+                        (slideOutHorizontally(tween(240)) { it / 3 } + fadeOut(tween(160)))
+                } else {
+                    (slideInHorizontally(tween(260)) { it / 3 } + fadeIn(tween(180))) togetherWith
+                        (slideOutHorizontally(tween(240)) { -it / 3 } + fadeOut(tween(160)))
+                }
+            },
+            label = "tabShell",
+        ) { isTab ->
+        if (isTab) {
             HorizontalPager(
                 state = tabPagerState,
-                modifier = Modifier.fillMaxSize().layerBackdrop(glassBackdrop),
+                modifier = Modifier.fillMaxSize(),
             ) { index ->
                 when (tabPages[index]) {
                     Page.Home -> HomeScreen(
@@ -494,6 +510,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                 )
             }
             }
+        }
         }
         }
 
