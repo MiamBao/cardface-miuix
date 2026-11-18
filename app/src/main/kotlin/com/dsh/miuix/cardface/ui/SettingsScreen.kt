@@ -314,6 +314,13 @@ fun SettingsScreen(
         item(key = "appearance") {
             SettingsGroup("外观") {
                 SwitchPreference(
+                    title = "主页状态卡玻璃质感",
+                    summary = if (prefs.glassHeroCard) "玻璃卡面 + SukiSU 大对号" else "SukiSU 风格实色绿卡 + 大对号",
+                    checked = prefs.glassHeroCard,
+                    onCheckedChange = { prefs.glassHeroCard = it },
+                )
+                RowDivider()
+                SwitchPreference(
                     title = "动态取色",
                     startAction = { SettingRowIcon(MiuixIcons.Theme) },
                     summary = "跟随壁纸取色（HyperOS 风格）；关闭后使用主题色",

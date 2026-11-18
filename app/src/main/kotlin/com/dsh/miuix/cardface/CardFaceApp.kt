@@ -278,6 +278,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                     Page.Home -> HomeScreen(
                         model = model,
                         innerPadding = innerPadding,
+                        glassBackdrop = glassBackdrop,
                         onOpenEditor = { url -> model.openEditor(url); nav.push(Route(Page.Editor, url)) },
                         onOpenFaq = { nav.push(Route(Page.Faq)) },
                         onOpenGuide = { nav.push(Route(Page.Guide)) },
@@ -351,6 +352,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                 Page.Home -> HomeScreen(
                     model = model,
                     innerPadding = innerPadding,
+                    glassBackdrop = glassBackdrop,
                     onOpenEditor = { url ->
                         model.openEditor(url)
                         nav.push(Route(Page.Editor, url))

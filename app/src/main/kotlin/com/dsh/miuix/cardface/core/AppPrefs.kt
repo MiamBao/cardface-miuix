@@ -97,6 +97,11 @@ class AppPrefs(context: Context) {
         get() = settings.getBoolean("data_saver", true)
         set(v) = settings.edit().putBoolean("data_saver", v).apply().also { touch() }
 
+    /** 首页状态卡是否使用玻璃质感；默认保留 SukiSU 风格实色卡。 */
+    var glassHeroCard: Boolean
+        get() = settings.getBoolean("glass_hero_card", false)
+        set(v) = settings.edit().putBoolean("glass_hero_card", v).apply().also { touch() }
+
     /** 卡面库首次打开时是否已经提示过省流量开关。 */
     var dataSaverPromptShown: Boolean
         get() = settings.getBoolean("data_saver_prompt_v1", false)

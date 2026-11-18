@@ -1,5 +1,6 @@
 package com.dsh.miuix.cardface.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.snap
@@ -49,6 +50,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
+import top.yukonga.miuix.kmp.glass.glassPanel
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -97,6 +99,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 fun HomeScreen(
     model: AppModel,
     innerPadding: PaddingValues,
+    glassBackdrop: top.yukonga.miuix.kmp.blur.Backdrop? = null,
     onOpenEditor: (String) -> Unit,
     onOpenFaq: () -> Unit,
     onOpenGuide: () -> Unit,
@@ -184,6 +187,8 @@ fun HomeScreen(
                     replacedCount = replacedCount,
                     demoMode = demoMode,
                     onActivate = onOpenGuide,
+                    glassBackdrop = glassBackdrop,
+                    glass = model.prefs.glassHeroCard,
                 )
             }
 
@@ -358,6 +363,8 @@ private fun HeroStatusCard(
     replacedCount: Int,
     demoMode: Boolean,
     onActivate: () -> Unit,
+    glassBackdrop: top.yukonga.miuix.kmp.blur.Backdrop? = null,
+    glass: Boolean = false,
 ) {
     val now = System.currentTimeMillis()
     val dayMs = 24L * 60L * 60L * 1000L
@@ -373,6 +380,48 @@ private fun HeroStatusCard(
     val dark = (0.299f * bg.red + 0.587f * bg.green + 0.114f * bg.blue) < 0.5f
     val onSurface = MiuixTheme.colorScheme.onSurface
     val summaryColor = MiuixTheme.colorScheme.onSurfaceVariantSummary
+
+    if (fresh && glass) {
+        androidx.compose.foundation.layout.Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .then(
+                    Modifier.glassPanel(
+                        backdrop = glassBackdrop,
+                        shape = top.yukonga.miuix.kmp.material.GlassShape(20.dp),
+                        fallback = Modifier.background(if (dark) Color(0xFF1A3825) else Color(0xFFDFFAE4), RoundedCornerShape(20.dp)),
+                    ),
+                ),
+        ) {
+            BigCheckCircle(
+                color = Color(0xFF36D167),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = 6.dp, y = (-10).dp)
+                    .size(84.dp),
+            )
+            Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircleIcon(
+                        imageVector = MiuixIcons.Ok,
+                        containerColor = Color(0xFF36D167).copy(alpha = 0.18f),
+                        contentColor = Color(0xFF1E9E4A),
+                        size = 44.dp,
+                        iconSize = 24.dp,
+                    )
+                    Spacer(Modifier.size(12.dp))
+                    Column {
+                        Text("已生效", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = onSurface)
+                        Text("已识别 $faceCount 张 · 已替换 $replacedCount 张", fontSize = 13.sp, color = summaryColor)
+                    }
+                }
+                Spacer(Modifier.height(10.dp))
+                Text("LSPosed · 小米智能卡", fontSize = 13.sp, color = summaryColor)
+            }
+        }
+        return
+    }
 
     if (fresh) {
         // ===== SukiSU 同款绿卡 =====
