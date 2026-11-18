@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
@@ -30,6 +32,8 @@ import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.overlay.OverlayDialog
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -145,8 +149,24 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
     var pendingGalleryName by remember { mutableStateOf("") }
     val route = nav.current
     val currentPage = route.page
+    val tabPages = listOf(Page.Home, Page.Gallery, Page.Settings)
+    val tabIndex = tabPages.indexOf(currentPage).takeIf { it >= 0 } ?: 0
+    val tabPagerState = rememberPagerState(initialPage = tabIndex) { tabPages.size }
 
     BackHandler(enabled = nav.canGoBack) { nav.pop() }
+
+    LaunchedEffect(tabPagerState.settledPage) {
+        if (currentPage.isTab) {
+            val target = tabPages[tabPagerState.settledPage]
+            if (currentPage != target) nav.resetTo(target)
+        }
+    }
+    LaunchedEffect(currentPage) {
+        if (currentPage.isTab) {
+            val index = tabPages.indexOf(currentPage)
+            if (index >= 0 && tabPagerState.currentPage != index) tabPagerState.scrollToPage(index)
+        }
+    }
 
     // 首次启动：直接进引导页（首页作为返回栈底，返回键不会退出应用）。
     LaunchedEffect(Unit) {
@@ -206,13 +226,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                         items = tabs,
                         selectedIndex = selected,
                         onSelect = { index ->
-                            nav.resetTo(
-                                when (index) {
-                                    0 -> Page.Home
-                                    1 -> Page.Gallery
-                                    else -> Page.Settings
-                                },
-                            )
+                            scope.launch { tabPagerState.animateScrollToPage(index) }
                         },
                         backdrop = null,
                         height = 56.dp,
@@ -235,6 +249,38 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
         },
         containerColor = MiuixTheme.colorScheme.surface,
     ) { innerPadding ->
+        if (currentPage.isTab) {
+            HorizontalPager(
+                state = tabPagerState,
+                modifier = Modifier.fillMaxSize().layerBackdrop(glassBackdrop),
+            ) { index ->
+                when (tabPages[index]) {
+                    Page.Home -> HomeScreen(
+                        model = model,
+                        innerPadding = innerPadding,
+                        onOpenEditor = { url -> model.openEditor(url); nav.push(Route(Page.Editor, url)) },
+                        onOpenFaq = { nav.push(Route(Page.Faq)) },
+                        onOpenGuide = { nav.push(Route(Page.Guide)) },
+                    )
+                    Page.Gallery -> GalleryScreen(
+                        model = model,
+                        innerPadding = innerPadding,
+                        onPickForCrop = { uris ->
+                            model.startCropBatch(CropTarget.Gallery, uris)
+                            if (uris.isNotEmpty()) nav.push(Route(Page.Crop))
+                        },
+                        onOpenCatalog = { model.openCatalog(CropTarget.Gallery); nav.push(Route(Page.Catalog)) },
+                    )
+                    else -> SettingsScreen(
+                        model = model,
+                        innerPadding = innerPadding,
+                        onOpenBlacklist = { nav.push(Route(Page.Blacklist)) },
+                        onOpenAbout = { nav.push(Route(Page.About)) },
+                        onOpenVersion = { nav.push(Route(Page.Version)) },
+                    )
+                }
+            }
+        } else {
         AnimatedContent(
             targetState = route,
             modifier = Modifier
@@ -444,6 +490,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                 )
             }
             }
+        }
         }
 
     val saveBitmap = pendingGallerySave
