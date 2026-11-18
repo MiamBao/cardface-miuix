@@ -17,8 +17,8 @@ android {
         applicationId = "io.github.miambao.cardface"
         minSdk = 33
         targetSdk = 36
-        versionCode = 21
-        versionName = "2.0.1"
+        versionCode = 22
+        versionName = "2.1.0"
     }
 
     // 签名信息从本地的 keystore.properties 读取（该文件与 keystore/ 都不入库）。
@@ -68,7 +68,6 @@ dependencies {
     implementation("top.yukonga.miuix.kmp:miuix-icons:0.9.5-beta01")
     implementation("top.yukonga.miuix.kmp:miuix-preference:0.9.5-beta01")
     implementation("top.yukonga.miuix.kmp:miuix-glass:0.9.5-beta01")
-    implementation("top.yukonga.miuix.kmp:miuix-glass-icons:0.9.5-beta01")
     implementation("io.coil-kt.coil3:coil-compose:3.6.3")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")

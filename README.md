@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/Xposed-Modules-Repo/io.github.miambao.cardface"><img src="https://img.shields.io/badge/LSPosed-Module%20Repo-blue.svg" alt="LSPosed Repo"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue.svg" alt="License"/></a>
-  <img src="https://img.shields.io/badge/Android-8.0%2B-green.svg" alt="Android"/>
+  <img src="https://img.shields.io/badge/Android-13%2B-green.svg" alt="Android"/>
   <img src="https://img.shields.io/badge/LSPosed-API%20101%2B-orange.svg" alt="LSPosed"/>
 </p>
 
@@ -29,6 +29,14 @@
 这个项目最早是「DIY NFC 卡面图片」的界面与体验重构：原版功能没问题，但 UI 比较粗糙，风格也旧了。这次按 Miuix 的 HyperOS 风格把整套界面重做了一遍，图片缩放、裁剪这些细节也重新写了一次。
 
 如果你没有 root / LSPosed，这个 App 无法工作；如果你只是想让卡面好看一点，它大概是最省事的方式之一。
+
+## 2.1 更新
+
+- 全新澎湃 4 风格底栏，三个主界面支持左右滑动切换，底栏选中态实时跟随。
+- 页签进入子页面增加滑入滑出转场。
+- 关于页改版，新增作者栏；精简设置，移除不常用入口。
+- 修复云端卡面下载后图库重复文件；修复备份恢复灰图、未启用与损坏图片导出失败。
+- 本版最低 Android 13（API 33），Android 13 以下请继续使用 2.0.1。
 
 ## 2.0 更新
 
@@ -60,18 +68,18 @@
 - **在线卡面库**：Hibank 图片源，分类浏览、搜索、收藏、最近使用、下载后直接裁剪应用。
 - **海报分享**：横竖版、三种版式、四套配色，生成 4:3 高清海报。
 - **Miuix（HyperOS）界面**：大圆角卡片、分组列表、澎湃蓝 / 动态取色 / 多套主题色、深色模式、过渡动画、底部悬浮导航。
-- **维护功能**：一键重启卡包、数据备份 / 恢复、导出诊断信息、清除 hook 缓存、隐藏桌面图标、卡面重命名、黑名单。
+- **维护功能**：一键重启卡包、数据备份 / 恢复、清除 hook 缓存、隐藏桌面图标、卡面重命名、黑名单。
 
 ## 环境要求
 
-- Android 8.0+（minSdk 26，targetSdk 36，compileSdk 37）
+- Android 13+（minSdk 33，targetSdk 36，compileSdk 37）
 - 已 root，并安装 **LSPosed**（libxposed API 101+）
 - 卡包：小米智能卡（`com.miui.tsmclient`）
 - 参考验证环境：Xiaomi 15 Pro / HyperOS 4 / LSPosed 2.2.1 + 小米智能卡
 
 ## 安装与使用
 
-1. 下载 Release 里的 `CardFace-v2.0.1.apk` 并安装。
+1. 下载 Release 里的 `CardFace-v2.1.0.apk` 并安装。
 2. 在 LSPosed 里启用「卡面工坊」，作用域勾选：小米智能卡。
 3. 打开卡包，把卡面浏览一遍，让 hook 记录到卡面地址。
 4. 回到「卡面工坊」→ 点一张卡面 → 从相册 / 在线卡面库选图 → 裁剪 / 加标志 → 保存并应用。
@@ -81,7 +89,7 @@
 
 ## 下载
 
-> 2.0.1 是修复版：解决了 2.0.0 安装包上传损坏、部分用户无法解析的问题，功能与 2.0.0 一致。
+> 2.1.0 需要 Android 13 及以上；Android 13 以下请使用 2.0.1。
 
 - GitHub Releases：<https://github.com/MiamBao/cardface-miuix/releases/latest>
 - LSPosed 模块仓库：<https://github.com/Xposed-Modules-Repo/io.github.miambao.cardface>

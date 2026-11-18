@@ -314,13 +314,6 @@ fun SettingsScreen(
         item(key = "appearance") {
             SettingsGroup("外观") {
                 SwitchPreference(
-                    title = "主页状态卡玻璃质感",
-                    summary = if (prefs.glassHeroCard) "玻璃卡面 + SukiSU 大对号" else "SukiSU 风格实色绿卡 + 大对号",
-                    checked = prefs.glassHeroCard,
-                    onCheckedChange = { prefs.glassHeroCard = it },
-                )
-                RowDivider()
-                SwitchPreference(
                     title = "动态取色",
                     startAction = { SettingRowIcon(MiuixIcons.Theme) },
                     summary = "跟随壁纸取色（HyperOS 风格）；关闭后使用主题色",
@@ -399,24 +392,6 @@ fun SettingsScreen(
                         scope.launch {
                             val ok = withContext(Dispatchers.IO) { DeviceBridge.restartWallet(context, walletKind) }
                             toast(if (ok) "已重启卡包" else "重启失败：请检查 root 或卡包是否安装")
-                        }
-                    },
-                )
-                RowDivider()
-                ArrowPreference(
-                    title = "导出诊断信息",
-                    startAction = { SettingRowIcon(MiuixIcons.Info) },
-                    summary = "生成版本、设备、映射数量等信息并分享",
-                    onClick = {
-                        scope.launch {
-                            val file = withContext(Dispatchers.IO) {
-                                runCatching { writeDiagnostics(context, prefs, status, versionName) }.getOrNull()
-                            }
-                            if (file != null) {
-                                com.dsh.miuix.cardface.core.CardShare.shareTextFile(context, file, "分享诊断信息")
-                            } else {
-                                toast("诊断信息生成失败")
-                            }
                         }
                     },
                 )

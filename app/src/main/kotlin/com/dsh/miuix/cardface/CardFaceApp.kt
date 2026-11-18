@@ -252,7 +252,23 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
         },
         containerColor = MiuixTheme.colorScheme.surface,
     ) { innerPadding ->
-        if (currentPage.isTab) {
+        AnimatedContent(
+            targetState = currentPage.isTab,
+            modifier = Modifier.fillMaxSize(),
+            transitionSpec = {
+                if (!animationsEnabled) {
+                    EnterTransition.None togetherWith ExitTransition.None
+                } else if (targetState) {
+                    (slideInHorizontally(tween(260)) { -it / 3 } + fadeIn(tween(180))) togetherWith
+                        (slideOutHorizontally(tween(240)) { it / 3 } + fadeOut(tween(160)))
+                } else {
+                    (slideInHorizontally(tween(260)) { it / 3 } + fadeIn(tween(180))) togetherWith
+                        (slideOutHorizontally(tween(240)) { -it / 3 } + fadeOut(tween(160)))
+                }
+            },
+            label = "tabShell",
+        ) { isTab ->
+        if (isTab) {
 
             HorizontalPager(
                 state = tabPagerState,
@@ -262,7 +278,6 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                     Page.Home -> HomeScreen(
                         model = model,
                         innerPadding = innerPadding,
-                        glassBackdrop = null,
                         onOpenEditor = { url -> model.openEditor(url); nav.push(Route(Page.Editor, url)) },
                         onOpenFaq = { nav.push(Route(Page.Faq)) },
                         onOpenGuide = { nav.push(Route(Page.Guide)) },
@@ -335,7 +350,6 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                 Page.Home -> HomeScreen(
                     model = model,
                     innerPadding = innerPadding,
-                    glassBackdrop = null,
                     onOpenEditor = { url ->
                         model.openEditor(url)
                         nav.push(Route(Page.Editor, url))
@@ -495,6 +509,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                 )
             }
             }
+        }
         }
         }
 

@@ -22,7 +22,8 @@ class ImageStore(context: Context) {
     val appliedDir: File = File(appContext.filesDir, "applied").apply { mkdirs() }
 
     fun list(): List<GalleryImage> =
-        dir.listFiles { f -> f.isFile && f.name.endsWith(".png", true) }
+        // lib-* 是卡面库下载缓存，只给卡面库内部使用，不当作图库图片展示。
+        dir.listFiles { f -> f.isFile && f.name.endsWith(".png", true) && !f.name.startsWith("lib-") }
             ?.sortedByDescending { it.lastModified() }
             ?.map { GalleryImage(it) }
             .orEmpty()

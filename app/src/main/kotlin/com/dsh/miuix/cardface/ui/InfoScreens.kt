@@ -394,13 +394,6 @@ fun AboutScreen(
                     MiniTag("Kotlin + Compose")
                     MiniTag("Miuix 0.9.4")
                 }
-                Spacer(Modifier.height(14.dp))
-                Text(
-                    text = "重构者：DeepSeek（大肥鱼）",
-                    style = MiuixTheme.textStyles.footnote1,
-                    fontWeight = FontWeight.Medium,
-                    color = MiuixTheme.colorScheme.primary,
-                )
             }
         }
 
@@ -526,11 +519,6 @@ fun AboutScreen(
                     AboutLine(
                         "AndroidX / Compose / Coil 3",
                         "Jetpack Compose、Activity Compose、Coil 3 图片加载，Apache-2.0。",
-                    )
-                    AboutLine(
-                        "重构者",
-                        "DeepSeek（大肥鱼）：负责 Miuix 界面重构、卡面 hook 链路、" +
-                            "图像管线与性能优化。",
                     )
                 }
             }
