@@ -213,10 +213,14 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                     GlassNavigationItem(MiuixIcons.Photos, "图库", "图库"),
                     GlassNavigationItem(MiuixIcons.Settings, "设置", "设置"),
                 )
-                val selected = when (currentPage) {
-                    Page.Home -> 0
-                    Page.Gallery -> 1
-                    else -> 2
+                val selected = if (currentPage.isTab) {
+                    tabPagerState.currentPage
+                } else {
+                    when (currentPage) {
+                        Page.Home -> 0
+                        Page.Gallery -> 1
+                        else -> 2
+                    }
                 }
                 Box(
                     modifier = Modifier.fillMaxWidth(),
