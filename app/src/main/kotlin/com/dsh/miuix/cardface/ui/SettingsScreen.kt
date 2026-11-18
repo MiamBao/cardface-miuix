@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -522,6 +523,81 @@ fun SettingsScreen(
             }
         }
 
+    }
+
+    info?.let { (title, message) ->
+        InfoDialog(
+            show = true,
+            title = title,
+            message = message,
+            onDismiss = { info = null },
+        )
+    }
+    confirm?.let { spec ->
+        ConfirmDialog(
+            show = true,
+            title = spec.title,
+            message = spec.message,
+            confirmText = spec.confirmText,
+            destructive = spec.destructive,
+            onConfirm = {
+                spec.onConfirm()
+                confirm = null
+            },
+            onDismiss = { confirm = null },
+        )
+    }
+    if (showThemeDialog) {
+        OverlayDialog(show = true, title = "主题色", onDismissRequest = { showThemeDialog = false }) {
+            LazyColumn(modifier = Modifier.height(360.dp)) {
+                items(ThemeColors.presets.size) { index ->
+                    val preset = ThemeColors.presets[index]
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                prefs.keyColorArgb = preset.color.toArgb()
+                                showThemeDialog = false
+                            }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box(Modifier.size(22.dp).background(preset.color, CircleShape))
+                        Spacer(Modifier.size(12.dp))
+                        Text(
+                            preset.name,
+                            style = MiuixTheme.textStyles.body2,
+                            color = MiuixTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f),
+                        )
+                        if (prefs.keyColorArgb == preset.color.toArgb()) {
+                            Icon(MiuixIcons.Ok, null, tint = MiuixTheme.colorScheme.primary)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (showDarkDialog) {
+        OverlayDialog(show = true, title = "深色模式", onDismissRequest = { showDarkDialog = false }) {
+            Column {
+                listOf(0 to "跟随系统", 1 to "浅色", 2 to "深色").forEach { (value, label) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                prefs.darkMode = value
+                                showDarkDialog = false
+                            }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(label, style = MiuixTheme.textStyles.body2, color = MiuixTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
+                        if (prefs.darkMode == value) Icon(MiuixIcons.Ok, null, tint = MiuixTheme.colorScheme.primary)
+                    }
+                }
+            }
+        }
     }
 }
 
