@@ -1,6 +1,7 @@
 package com.dsh.miuix.cardface.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
@@ -403,6 +404,48 @@ fun AboutScreen(
             }
         }
 
+        // 作者
+        item(key = "author") {
+            Column {
+                SmallTitle(text = "作者")
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    cornerRadius = 20.dp,
+                    insideMargin = PaddingValues(16.dp),
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        androidx.compose.foundation.Image(
+                            painter = androidx.compose.ui.res.painterResource(id = com.dsh.miuix.cardface.R.drawable.author_avatar),
+                            contentDescription = "作者头像",
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clip(androidx.compose.foundation.shape.CircleShape),
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                        )
+                        Spacer(Modifier.size(14.dp))
+                        Column {
+                            Text(
+                                text = "MiamBao",
+                                style = MiuixTheme.textStyles.headline2,
+                                fontWeight = FontWeight.Bold,
+                                color = MiuixTheme.colorScheme.onSurface,
+                            )
+                            Text(
+                                text = "酷安主页",
+                                style = MiuixTheme.textStyles.footnote1,
+                                color = MiuixTheme.colorScheme.primary,
+                                modifier = Modifier.clickable {
+                                    openUrl("https://www.coolapk.com/u/")
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
         // 项目：地址 / 检查更新 / 更新公告 / 自动检查开关
         item(key = "project") {
             Column {
@@ -418,28 +461,6 @@ fun AboutScreen(
                         title = "项目地址",
                         summary = "github.com/MiamBao/cardface-miuix",
                         onClick = { openUrl("https://github.com/MiamBao/cardface-miuix") },
-                    )
-                    HorizontalDivider()
-                    ArrowPreference(
-                        title = "检查更新",
-                        summary = if (checking) "正在检查…" else "当前版本 v$version",
-                        onClick = { checkUpdate() },
-                    )
-                    HorizontalDivider()
-                    ArrowPreference(
-                        title = "更新公告",
-                        summary = "查看历史版本的更新日志",
-                        onClick = onOpenChangelog,
-                    )
-                    HorizontalDivider()
-                    SwitchPreference(
-                        title = "自动检查更新",
-                        summary = "启动时检查 GitHub 最新版本",
-                        checked = autoCheckUpdate,
-                        onCheckedChange = {
-                            autoCheckUpdate = it
-                            prefs.autoCheckUpdate = it
-                        },
                     )
                 }
             }
