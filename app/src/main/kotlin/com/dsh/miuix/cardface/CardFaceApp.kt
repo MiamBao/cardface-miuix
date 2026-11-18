@@ -144,7 +144,6 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val nav = rememberSaveable(saver = NavState.Saver) { NavState() }
-    val glassBackdrop = rememberLayerBackdrop()
     var pendingGallerySave by remember { mutableStateOf<Bitmap?>(null) }
     var pendingGalleryName by remember { mutableStateOf("") }
     val route = nav.current
@@ -253,23 +252,8 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
         },
         containerColor = MiuixTheme.colorScheme.surface,
     ) { innerPadding ->
-        AnimatedContent(
-            targetState = currentPage.isTab,
-            modifier = Modifier.fillMaxSize().layerBackdrop(glassBackdrop),
-            transitionSpec = {
-                if (!animationsEnabled) {
-                    EnterTransition.None togetherWith ExitTransition.None
-                } else if (targetState) {
-                    (slideInHorizontally(tween(260)) { -it / 3 } + fadeIn(tween(180))) togetherWith
-                        (slideOutHorizontally(tween(240)) { it / 3 } + fadeOut(tween(160)))
-                } else {
-                    (slideInHorizontally(tween(260)) { it / 3 } + fadeIn(tween(180))) togetherWith
-                        (slideOutHorizontally(tween(240)) { -it / 3 } + fadeOut(tween(160)))
-                }
-            },
-            label = "tabShell",
-        ) { isTab ->
-        if (isTab) {
+        if (currentPage.isTab) {
+
             HorizontalPager(
                 state = tabPagerState,
                 modifier = Modifier.fillMaxSize(),
@@ -278,7 +262,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                     Page.Home -> HomeScreen(
                         model = model,
                         innerPadding = innerPadding,
-                        glassBackdrop = glassBackdrop,
+                        glassBackdrop = null,
                         onOpenEditor = { url -> model.openEditor(url); nav.push(Route(Page.Editor, url)) },
                         onOpenFaq = { nav.push(Route(Page.Faq)) },
                         onOpenGuide = { nav.push(Route(Page.Guide)) },
@@ -305,8 +289,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
         AnimatedContent(
             targetState = route,
             modifier = Modifier
-                .fillMaxSize()
-                .layerBackdrop(glassBackdrop),
+                .fillMaxSize(),
             transitionSpec = {
                 if (!animationsEnabled) {
                     EnterTransition.None togetherWith ExitTransition.None
@@ -352,7 +335,7 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                 Page.Home -> HomeScreen(
                     model = model,
                     innerPadding = innerPadding,
-                    glassBackdrop = glassBackdrop,
+                    glassBackdrop = null,
                     onOpenEditor = { url ->
                         model.openEditor(url)
                         nav.push(Route(Page.Editor, url))
@@ -512,7 +495,6 @@ private fun CardFaceRoot(model: AppModel, animationsEnabled: Boolean) {
                 )
             }
             }
-        }
         }
         }
 
