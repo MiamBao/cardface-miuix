@@ -427,7 +427,7 @@ fun AboutScreen(
                         Spacer(Modifier.size(14.dp))
                         Column {
                             Text(
-                                text = "MiamBao",
+                                text = "树皮味的面包",
                                 style = MiuixTheme.textStyles.headline2,
                                 fontWeight = FontWeight.Bold,
                                 color = MiuixTheme.colorScheme.onSurface,
@@ -437,7 +437,7 @@ fun AboutScreen(
                                 style = MiuixTheme.textStyles.footnote1,
                                 color = MiuixTheme.colorScheme.primary,
                                 modifier = Modifier.clickable {
-                                    openUrl("https://www.coolapk.com/u/")
+                                    openUrl("https://www.coolapk.com/u/43186974")
                                 },
                             )
                         }
